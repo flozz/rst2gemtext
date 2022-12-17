@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from io import StringIO
+
 import docutils.parsers.rst
 import docutils.utils
 import docutils.frontend
@@ -68,4 +70,22 @@ class GemtextWriter(docutils.writers.Writer):
     def translate(self):
         self.visitor = GemtextTranslator(self.document)
         self.document.walkabout(self.visitor)
-        self.output = "\n\n".join([node.to_gemtext() for node in self.visitor.nodes])
+        self.output = (
+            "\n\n".join([node.to_gemtext() for node in self.visitor.nodes]) + "\n"
+        )
+
+
+def convert(rst_text):
+    """Convert the input reStructuredText to Gemtext.
+
+    :param str rst_text: The input reStructuredText.
+
+    :rtype: str
+    :return: The converted Gemtext.
+    """
+    document = parse_rst(rst_text)
+    output_io = StringIO()
+    writer = GemtextWriter()
+    writer.write(document, output_io)
+    output_io.seek(0)
+    return output_io.read()

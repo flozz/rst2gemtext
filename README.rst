@@ -33,7 +33,26 @@ TODO
 Python Library
 ~~~~~~~~~~~~~~
 
-TODO
+Example: Converting a reStructuredText string to a Gemtext string:
+
+.. code-block:: python
+
+   import rst2gemtext
+   output_gemtext = rst2gemtext.convert("my restructured text string")
+
+Example: Converting a reStructuredText file to a Gemtext file:
+
+.. code-block:: python
+
+   import rst2gemtext
+
+   with open("input.rst", "r") as input_file:
+       input_rst = input_file.read()
+
+   output_gemtext = rst2gemtext.convert(input_rst)
+
+   with open("output.gmi", "w") as output_file:
+       output_file.write(output_gemtext)
 
 
 Contributing
