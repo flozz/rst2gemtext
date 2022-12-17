@@ -54,7 +54,7 @@ reStructuredText nodes to support:
 * [ ] line_block
 * [ ] list_item
 * [x] literal
-* [ ] literal_block
+* [x] literal_block
 * [ ] note
 * [ ] option
 * [ ] option_argument

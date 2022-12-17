@@ -13,6 +13,7 @@ Requirements
 
 * Python >= 3.7
 * docutils
+* pygments
 
 
 Installation

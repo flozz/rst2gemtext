@@ -1,0 +1,15 @@
+```
+def foo():
+   print("foo")
+
+def bar():
+   return "bar"
+```
+
+```python
+def foo():
+   print("foo")
+
+def bar():
+   return "bar"
+```

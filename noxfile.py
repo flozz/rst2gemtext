@@ -26,4 +26,4 @@ def black_fix(session):
 def test(session):
     session.install("pytest")
     session.install("-e", ".")
-    session.run("pytest", "--verbose")
+    session.run("pytest", "-vv")

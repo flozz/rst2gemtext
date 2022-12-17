@@ -80,6 +80,18 @@ class TitleNode(Node):
         )
 
 
+class PreformattedTextNode(Node):
+    def __init__(self, alt=""):
+        Node.__init__(self)
+        self.alt = alt
+
+    def to_gemtext(self):
+        return "```%s\n%s\n```" % (
+            self.alt,
+            self.rawtext,
+        )
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -114,6 +126,19 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         docutils.nodes.GenericNodeVisitor.dispatch_departure(self, node)
 
     # ==== RST NODES ====
+
+    def visit_literal_block(self, node):
+        alt = ""
+        for class_ in node.attributes["classes"]:
+            if class_ != "code":
+                alt = class_
+                break
+        preformatted_text_node = PreformattedTextNode(alt=alt)
+        self._current_node = preformatted_text_node
+        self.nodes.append(preformatted_text_node)
+
+    def depart_literal_block(self, node):
+        pass
 
     # paragraph
 

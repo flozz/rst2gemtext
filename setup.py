@@ -29,6 +29,7 @@ setup(
     py_modules=["rst2gemtext"],
     install_requires=[
         "docutils",
+        "pygments",
     ],
     extras_require={
         "dev": [
