@@ -45,8 +45,9 @@ def parse_rst(rst_text):
 class Node:
     """Base class to implement Gemini text nodes."""
 
-    #: Contains raw text extracted from reStructuredText nodes.
-    rawtext = ""
+    def __init__(self):
+        #: Contains raw text extracted from reStructuredText nodes.
+        self.rawtext = ""
 
     def append_text(self, text):
         """Appends some raw text to the current node.
@@ -66,9 +67,8 @@ class ParagraphNode(Node):
 
 
 class TitleNode(Node):
-    level = 1
-
     def __init__(self, level=1):
+        Node.__init__(self)
         self.level = level
 
     def to_gemtext(self):
