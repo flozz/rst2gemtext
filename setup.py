@@ -27,7 +27,7 @@ setup(
     author="Fabien LOISON",
     py_modules=["rst2gemtext"],
     install_requires=[
-        "docutils"
+        "docutils",
     ],
     extras_require={
         "dev": [
