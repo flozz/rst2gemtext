@@ -31,7 +31,7 @@ reStructuredText nodes to support:
 * [ ] docinfo
 * [ ] doctest_block
 * [ ] document
-* [ ] emphasis
+* [x] emphasis
 * [ ] entry
 * [ ] enumerated_list
 * [ ] error
@@ -53,7 +53,7 @@ reStructuredText nodes to support:
 * [ ] legend
 * [ ] line_block
 * [ ] list_item
-* [ ] literal
+* [x] literal
 * [ ] literal_block
 * [ ] note
 * [ ] option
@@ -74,7 +74,7 @@ reStructuredText nodes to support:
 * [x] section
 * [ ] sidebar
 * [ ] status
-* [ ] strong
+* [x] strong
 * [ ] subscript
 * [ ] substitution_definition
 * [ ] substitution_reference

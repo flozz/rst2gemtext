@@ -83,6 +83,14 @@ class TitleNode(Node):
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
+    #: Nodes to ignore as there is no equivalent markup in Gemtext.
+    #: NOTE: the text inside the notes will be added to the parent node.
+    _NOP_NODES = [
+        "strong",
+        "emphasis",
+        "literal",
+    ]
+
     def __init__(self, document):
         docutils.nodes.GenericNodeVisitor.__init__(self, document)
 
@@ -92,6 +100,18 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._current_node = None
         #: The current section level (used for the titles level)
         self._section_level = 0
+
+    def dispatch_visit(self, node):
+        if node.tagname in self._NOP_NODES:
+            return
+
+        docutils.nodes.GenericNodeVisitor.dispatch_visit(self, node)
+
+    def dispatch_departure(self, node):
+        if node.tagname in self._NOP_NODES:
+            return
+
+        docutils.nodes.GenericNodeVisitor.dispatch_departure(self, node)
 
     # ==== RST NODES ====
 
