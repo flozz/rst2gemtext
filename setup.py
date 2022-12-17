@@ -20,6 +20,7 @@ setup(
         "Source Code": "https://github.com/flozz/rst2gemtext",
         "Issues": "https://github.com/flozz/rst2gemtext/issues",
         "Chat": "https://discord.gg/P77sWhuSs4",
+        "Donate": "https://github.com/flozz/rst2gemtext#support-this-project",
     },
     license="GPLv3",
     long_description=long_description,
