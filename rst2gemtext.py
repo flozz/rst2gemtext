@@ -9,10 +9,26 @@ import docutils.nodes
 import docutils.writers
 
 
-def parse_rst(text):
+def remove_newlines(text):
+    """Remove new lines characters and replace them by a space.
+
+    Supported end of line formats:
+
+    * LF (`\n`): Unix style end of lines
+    * CR LF (`\r\n`): Windows style end of lines
+    * CR (`\r`): Legacy macOS end of lines (macOS 9 and earlier)
+
+    :param str text: The text to cleanup.
+    :rtype: str
+    :return: The cleaned text.
+    """
+    return text.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+
+
+def parse_rst(rst_text):
     """Parses a reStructuredText document.
 
-    :param str text: The reStructuredText to parse.
+    :param str rst_text: The reStructuredText to parse.
     :rtype: docutils.nodes.document
     """
 
@@ -22,7 +38,7 @@ def parse_rst(text):
         components=components
     ).get_default_values()
     document = docutils.utils.new_document("document", settings=settings)
-    parser.parse(text, document)
+    parser.parse(rst_text, document)
     return document
 
 
@@ -44,6 +60,11 @@ class Node:
         raise NotImplementedError()
 
 
+class ParagraphNode(Node):
+    def to_gemtext(self):
+        return remove_newlines(self.rawtext)
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -52,6 +73,28 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     #: The node that is currently being edited.
     _current_node = None
+
+    # ==== RST NODES ====
+
+    # paragraph
+
+    def visit_paragraph(self, node):
+        paragraph_node = ParagraphNode()
+        self._current_node = paragraph_node
+        self.nodes.append(paragraph_node)
+
+    def depart_paragraph(self, node):
+        pass
+
+    # Text (leaf)
+
+    def visit_Text(self, node):
+        self._current_node.append_text(node.astext())
+
+    def depart_Text(self, node):
+        pass
+
+    # ==== DEFAULT ====
 
     def default_visit(self, node):
         """Override for generic, uniform traversals."""

@@ -63,7 +63,7 @@ reStructuredText nodes to support:
 * [ ] option_list_item
 * [ ] option_string
 * [ ] organization
-* [ ] paragraph
+* [x] paragraph
 * [ ] pending
 * [ ] problematic
 * [ ] raw
@@ -85,7 +85,7 @@ reStructuredText nodes to support:
 * [ ] target
 * [ ] tbody
 * [ ] term
-* [ ] Text
+* [x] Text
 * [ ] tgroup
 * [ ] thead
 * [ ] tip
