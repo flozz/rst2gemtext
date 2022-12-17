@@ -71,7 +71,7 @@ reStructuredText nodes to support:
 * [ ] revision
 * [ ] row
 * [ ] rubric
-* [ ] section
+* [x] section
 * [ ] sidebar
 * [ ] status
 * [ ] strong
@@ -89,7 +89,7 @@ reStructuredText nodes to support:
 * [ ] tgroup
 * [ ] thead
 * [ ] tip
-* [ ] title
+* [x] title
 * [ ] title_reference
 * [ ] topic
 * [ ] transition

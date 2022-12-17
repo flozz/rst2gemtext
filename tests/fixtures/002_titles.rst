@@ -1,0 +1,20 @@
+Level 1
+=======
+
+Level 2
+-------
+
+Level 3
+~~~~~~~
+
+Level 3 #2
+~~~~~~~~~~
+
+Level 2 #2
+----------
+
+Level 3 #3
+~~~~~~~~~~
+
+Level 4 (unsupported in Gemtext markup)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

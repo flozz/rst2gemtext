@@ -65,14 +65,33 @@ class ParagraphNode(Node):
         return remove_newlines(self.rawtext)
 
 
+class TitleNode(Node):
+    level = 1
+
+    def __init__(self, level=1):
+        self.level = level
+
+    def to_gemtext(self):
+        return " ".join(
+            [
+                "#" * max(1, min(3, self.level)),
+                self.rawtext,
+            ]
+        )
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
-    #: List of Gemtext nodes that compose the final document.
-    nodes = []
+    def __init__(self, document):
+        docutils.nodes.GenericNodeVisitor.__init__(self, document)
 
-    #: The node that is currently being edited.
-    _current_node = None
+        #: List of Gemtext nodes that compose the final document.
+        self.nodes = []
+        #: The node that is currently being edited.
+        self._current_node = None
+        #: The current section level (used for the titles level)
+        self._section_level = 0
 
     # ==== RST NODES ====
 
@@ -86,12 +105,30 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def depart_paragraph(self, node):
         pass
 
+    # section
+
+    def visit_section(self, node):
+        self._section_level += 1
+
+    def depart_section(self, node):
+        self._section_level -= 1
+
     # Text (leaf)
 
     def visit_Text(self, node):
         self._current_node.append_text(node.astext())
 
     def depart_Text(self, node):
+        pass
+
+    # title
+
+    def visit_title(self, node):
+        title_node = TitleNode(level=self._section_level)
+        self._current_node = title_node
+        self.nodes.append(title_node)
+
+    def depart_title(self, node):
         pass
 
     # ==== DEFAULT ====
@@ -108,7 +145,9 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 class GemtextWriter(docutils.writers.Writer):
     """Write Gemtext from reStructuredText ducument."""
 
-    visitor = None
+    def __init__(self):
+        docutils.writers.Writer.__init__(self)
+        self.visitor = None
 
     def translate(self):
         self.visitor = GemtextTranslator(self.document)
