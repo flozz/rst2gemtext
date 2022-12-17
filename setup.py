@@ -25,8 +25,7 @@ setup(
     long_description=long_description,
     keywords="restructuredtext rst convert gemtext gemini docutils",
     author="Fabien LOISON",
-    packages=find_packages(),
-    include_package_data=True,
+    py_modules=["rst2gemtext"],
     install_requires=[
         "docutils"
     ],
