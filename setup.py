@@ -39,4 +39,9 @@ setup(
             "black",
         ]
     },
+    entry_points={
+        "console_scripts": [
+            "rst2gemtext = rst2gemtext:main",
+        ],
+    },
 )
