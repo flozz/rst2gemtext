@@ -28,7 +28,20 @@ Usage
 Command Line Interface (CLI)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+::
+
+   usage: rst2gemtext [-h] input_rst output_gemtext
+
+   Converts reStructuredText to Gemtext (Gemini markup format)
+
+   positional arguments:
+     input_rst       the reStructuredText file to convert
+     output_gemtext  the output Gemtext file
+
+   options:
+     -h, --help      show this help message and exit
+
+   Inaccurate output? Report bugs to https://github.com/flozz/rst2gemtext/issues
 
 
 Python Library

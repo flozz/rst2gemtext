@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+import argparse
 from io import StringIO
 
 import docutils.parsers.rst
@@ -216,3 +218,31 @@ def convert(rst_text):
     writer.write(document, output_io)
     output_io.seek(0)
     return output_io.read()
+
+
+def main(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser(
+        prog="rst2gemtext",
+        description="Converts reStructuredText to Gemtext (Gemini markup format)",
+        epilog="Inaccurate output? Report bugs to https://github.com/flozz/rst2gemtext/issues",
+    )
+
+    parser.add_argument(
+        "input_rst",
+        help="the reStructuredText file to convert",
+        type=argparse.FileType("r"),
+    )
+    parser.add_argument(
+        "output_gemtext",
+        help="the output Gemtext file",
+        type=argparse.FileType("w"),
+    )
+
+    params = parser.parse_args(args)
+
+    output_gemtext = convert(params.input_rst.read())
+    params.output_gemtext.write(output_gemtext)
+
+
+if __name__ == "__main__":
+    main()
