@@ -237,10 +237,21 @@ def main(args=sys.argv[1:]):
         help="the output Gemtext file",
         type=argparse.FileType("w"),
     )
+    parser.add_argument(
+        "--print-xml",
+        help="print the reStructuredText as XML DOM for debug purpose",
+        action="store_true",
+        default=False,
+    )
 
     params = parser.parse_args(args)
+    input_rst = params.input_rst.read()
 
-    output_gemtext = convert(params.input_rst.read())
+    if params.print_xml:
+        document = parse_rst(input_rst)
+        print(document.asdom().toprettyxml(indent="  "))
+
+    output_gemtext = convert(input_rst)
     params.output_gemtext.write(output_gemtext)
 
 

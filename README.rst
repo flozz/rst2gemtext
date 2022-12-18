@@ -28,9 +28,13 @@ Usage
 Command Line Interface (CLI)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+Example::
 
-   usage: rst2gemtext [-h] input_rst output_gemtext
+   rst2gemtext input.rst output.gmi
+
+Usage::
+
+   usage: rst2gemtext [-h] [--print-xml] input_rst output_gemtext
 
    Converts reStructuredText to Gemtext (Gemini markup format)
 
@@ -40,6 +44,7 @@ Command Line Interface (CLI)
 
    options:
      -h, --help      show this help message and exit
+     --print-xml     print the reStructuredText DOM as XML for debugging purpose
 
    Inaccurate output? Report bugs to https://github.com/flozz/rst2gemtext/issues
 
