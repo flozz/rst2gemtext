@@ -33,7 +33,7 @@ reStructuredText nodes to support:
 * [ ] document
 * [x] emphasis
 * [ ] entry
-* [ ] enumerated_list
+* [x] enumerated_list
 * [ ] error
 * [ ] field
 * [ ] field_body

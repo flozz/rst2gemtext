@@ -41,3 +41,19 @@ class Test_convert:
 
         output_gemtext = rst2gemtext.convert(input_rst)
         assert output_gemtext == expected_gemtext
+
+
+class Test_EnumaratedListNode:
+    @pytest.mark.parametrize(
+        "number,result",
+        [
+            (1, "a"),
+            (2, "b"),
+            (26, "z"),
+            (27, "aa"),
+            (28, "ab"),
+        ],
+    )
+    def test_to_loweralpha(self, number, result):
+        node = rst2gemtext.EnumaratedListNode(None)
+        assert node._to_loweralpha(number) == result

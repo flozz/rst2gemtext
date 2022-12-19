@@ -6,6 +6,7 @@ from io import StringIO
 
 import docutils.parsers.rst
 import docutils.utils
+import docutils.utils.roman
 import docutils.frontend
 import docutils.nodes
 import docutils.writers
@@ -114,12 +115,69 @@ class BlockQuoteNode(NodeGroup):
 
 
 class BulletListNode(NodeGroup):
-    pass
+    def to_gemtext(self):
+        items = []
+        for node in self.nodes:
+            if type(node) is ListItemNode:
+                items.append("* %s" % node.to_gemtext())
+            else:
+                items.append(node.to_gemtext())
+        return "\n".join(items)
 
 
 class ListItemNode(Node):
     def to_gemtext(self):
-        return "* %s" % remove_newlines(self.rawtext)
+        return remove_newlines(self.rawtext)
+
+
+class EnumaratedListNode(BulletListNode):
+    def __init__(self, node, enumtype="arabic", prefix="", suffix=".", start=1):
+        BulletListNode.__init__(self, node)
+        self.enumtype = enumtype
+        self.prefix = prefix
+        self.suffix = suffix
+        self.start = start
+
+    def _to_arabic(self, number):
+        return str(number)
+
+    def _to_loweralpha(self, number):
+        glyphs = "abcdefghijklmnopqrstuvwxyz"
+        result = ""
+        while number:
+            number -= 1
+            result += glyphs[number % len(glyphs)]
+            number //= len(glyphs)
+        return result[::-1]
+
+    def _to_upperalpha(self, number):
+        return self._to_loweralpha(number).upper()
+
+    def _to_lowerroman(self, number):
+        return docutils.utils.roman.toRoman(number).lower()
+
+    def _to_upperroman(self, number):
+        return docutils.utils.roman.toRoman(number)
+
+    def to_gemtext(self):
+        items = []
+        i = self.start
+        convertor = getattr(self, "_to_%s" % self.enumtype)
+        for node in self.nodes:
+            if type(node) is ListItemNode:
+                items.append(
+                    "* %s%s%s %s"
+                    % (
+                        self.prefix,
+                        convertor(i),
+                        self.suffix,
+                        node.to_gemtext(),
+                    )
+                )
+            else:
+                items.append(node.to_gemtext())
+            i += 1
+        return "\n".join(items)
 
 
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
@@ -195,6 +253,25 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         bullet_list_node = nodes.pop(0)
         bullet_list_node.nodes = nodes
         self.nodes.append(bullet_list_node)
+
+    # enumerated_list
+
+    def visit_enumerated_list(self, node):
+        enumerated_list_node = EnumaratedListNode(
+            node,
+            enumtype=node.attributes["enumtype"],
+            prefix=node.attributes["prefix"],
+            suffix=node.attributes["suffix"],
+            start=node.attributes["start"] if "start" in node.attributes else 1,
+        )
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(enumerated_list_node)
+
+    def depart_enumerated_list(self, node):
+        nodes = self._split_nodes(node)
+        enumerated_list_node = nodes.pop(0)
+        enumerated_list_node.nodes = nodes
+        self.nodes.append(enumerated_list_node)
 
     # list_item
 
