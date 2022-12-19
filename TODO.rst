@@ -11,7 +11,7 @@ reStructuredText nodes to support:
 * [ ] author
 * [ ] authors
 * [x] block_quote
-* [ ] bullet_list
+* [x] bullet_list
 * [ ] caption
 * [ ] caution
 * [ ] citation
@@ -52,7 +52,7 @@ reStructuredText nodes to support:
 * [ ] label
 * [ ] legend
 * [ ] line_block
-* [ ] list_item
+* [x] list_item
 * [x] literal
 * [x] literal_block
 * [ ] note

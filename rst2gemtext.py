@@ -113,6 +113,15 @@ class BlockQuoteNode(NodeGroup):
         return "\n>\n".join(["> %s" % node.to_gemtext() for node in self.nodes])
 
 
+class BulletListNode(NodeGroup):
+    pass
+
+
+class ListItemNode(Node):
+    def to_gemtext(self):
+        return "* %s" % remove_newlines(self.rawtext)
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -173,6 +182,32 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         block_quote_node = nodes.pop(0)
         block_quote_node.nodes = nodes
         self.nodes.append(block_quote_node)
+
+    # bullet_list
+
+    def visit_bullet_list(self, node):
+        bullet_list_node = BulletListNode(node)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(bullet_list_node)
+
+    def depart_bullet_list(self, node):
+        nodes = self._split_nodes(node)
+        bullet_list_node = nodes.pop(0)
+        bullet_list_node.nodes = nodes
+        self.nodes.append(bullet_list_node)
+
+    # list_item
+
+    def visit_list_item(self, node):
+        list_item_node = ListItemNode(node)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(list_item_node)
+
+    def depart_list_item(self, node):
+        nodes = self._split_nodes(node)
+        list_item_node = nodes.pop(0)
+        list_item_node.append_text(" ".join([node.to_gemtext() for node in nodes]))
+        self.nodes.append(list_item_node)
 
     # literal_block
 
