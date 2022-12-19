@@ -10,7 +10,7 @@ reStructuredText nodes to support:
 * [ ] attribution
 * [ ] author
 * [ ] authors
-* [ ] block_quote
+* [x] block_quote
 * [ ] bullet_list
 * [ ] caption
 * [ ] caution

@@ -73,6 +73,9 @@ class NodeGroup(Node):
         #: Nodes of the group
         self.nodes = []
 
+    def to_gemtext(self):
+        return "\n".join([node.to_gemtext() for node in self.nodes])
+
 
 class ParagraphNode(Node):
     def to_gemtext(self):
@@ -103,6 +106,11 @@ class PreformattedTextNode(Node):
             self.alt,
             self.rawtext,
         )
+
+
+class BlockQuoteNode(NodeGroup):
+    def to_gemtext(self):
+        return "\n>\n".join(["> %s" % node.to_gemtext() for node in self.nodes])
 
 
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
@@ -138,7 +146,35 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
         docutils.nodes.GenericNodeVisitor.dispatch_departure(self, node)
 
+    def _split_nodes(self, rst_node):
+        """Split the node list on the given rst_node.
+        :param rst_node: The reStructuredText node
+        :rtype: list[Node]
+        :return: The nodes below the rst_node
+        """
+        for i in range(len(self.nodes)):
+            if self.nodes[i].rst_node is rst_node:
+                break
+        splitted = self.nodes[i:]
+        self.nodes = self.nodes[:i]
+        return splitted
+
     # ==== RST NODES ====
+
+    # block_quote
+
+    def visit_block_quote(self, node):
+        block_quote_node = BlockQuoteNode(node)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(block_quote_node)
+
+    def depart_block_quote(self, node):
+        nodes = self._split_nodes(node)
+        block_quote_node = nodes.pop(0)
+        block_quote_node.nodes = nodes
+        self.nodes.append(block_quote_node)
+
+    # literal_block
 
     def visit_literal_block(self, node):
         alt = ""
