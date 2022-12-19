@@ -206,8 +206,17 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def depart_list_item(self, node):
         nodes = self._split_nodes(node)
         list_item_node = nodes.pop(0)
-        list_item_node.append_text(" ".join([node.to_gemtext() for node in nodes]))
-        self.nodes.append(list_item_node)
+        for node in nodes:
+            if type(node) in [BulletListNode]:
+                self.nodes.append(list_item_node)
+                self.nodes.append(node)
+                list_item_node = ListItemNode(node)
+            else:
+                if list_item_node.rawtext:
+                    list_item_node.append_text(" ")
+                list_item_node.append_text(node.to_gemtext())
+        if list_item_node.rawtext:
+            self.nodes.append(list_item_node)
 
     # literal_block
 
