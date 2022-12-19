@@ -24,7 +24,7 @@ setup(
     },
     license="GPLv3",
     long_description=long_description,
-    keywords="restructuredtext rst convert gemtext gemini docutils",
+    keywords="restructuredtext rst convert gemtext gmi gemini docutils",
     author="Fabien LOISON",
     py_modules=["rst2gemtext"],
     install_requires=[
