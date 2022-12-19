@@ -47,7 +47,9 @@ def parse_rst(rst_text):
 class Node:
     """Base class to implement Gemini text nodes."""
 
-    def __init__(self):
+    def __init__(self, rst_node):
+        #: The original reStructuredText node
+        self.rst_node = rst_node
         #: Contains raw text extracted from reStructuredText nodes.
         self.rawtext = ""
 
@@ -63,14 +65,23 @@ class Node:
         raise NotImplementedError()
 
 
+class NodeGroup(Node):
+    """Base class to implement groups of Gemini text nodes."""
+
+    def __init__(self, rst_node):
+        Node.__init__(self, rst_node)
+        #: Nodes of the group
+        self.nodes = []
+
+
 class ParagraphNode(Node):
     def to_gemtext(self):
         return remove_newlines(self.rawtext)
 
 
 class TitleNode(Node):
-    def __init__(self, level=1):
-        Node.__init__(self)
+    def __init__(self, rst_node, level=1):
+        Node.__init__(self, rst_node)
         self.level = level
 
     def to_gemtext(self):
@@ -83,8 +94,8 @@ class TitleNode(Node):
 
 
 class PreformattedTextNode(Node):
-    def __init__(self, alt=""):
-        Node.__init__(self)
+    def __init__(self, rst_node, alt=""):
+        Node.__init__(self, rst_node)
         self.alt = alt
 
     def to_gemtext(self):
@@ -135,7 +146,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
             if class_ != "code":
                 alt = class_
                 break
-        preformatted_text_node = PreformattedTextNode(alt=alt)
+        preformatted_text_node = PreformattedTextNode(node, alt=alt)
         self._current_node = preformatted_text_node
         self.nodes.append(preformatted_text_node)
 
@@ -145,7 +156,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     # paragraph
 
     def visit_paragraph(self, node):
-        paragraph_node = ParagraphNode()
+        paragraph_node = ParagraphNode(node)
         self._current_node = paragraph_node
         self.nodes.append(paragraph_node)
 
@@ -171,7 +182,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     # title
 
     def visit_title(self, node):
-        title_node = TitleNode(level=self._section_level)
+        title_node = TitleNode(node, level=self._section_level)
         self._current_node = title_node
         self.nodes.append(title_node)
 
