@@ -80,7 +80,7 @@ reStructuredText nodes to support:
 * [ ] substitution_reference
 * [ ] subtitle
 * [ ] superscript
-* [ ] system_message
+* [x] system_message
 * [ ] table
 * [ ] target
 * [ ] tbody
