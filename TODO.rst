@@ -67,7 +67,7 @@ reStructuredText nodes to support:
 * [ ] pending
 * [ ] problematic
 * [ ] raw
-* [ ] reference
+* [x] reference
 * [ ] revision
 * [ ] row
 * [ ] rubric

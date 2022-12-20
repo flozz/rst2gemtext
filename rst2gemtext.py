@@ -11,6 +11,13 @@ import docutils.frontend
 import docutils.nodes
 import docutils.writers
 
+# XXX Hack: monkeypatch docutils to support gemini:// URIs
+import docutils.utils.urischemes
+
+if "gemini" not in docutils.utils.urischemes.schemes:
+    docutils.utils.urischemes.schemes["gemini"] = ""
+# XXX
+
 
 def remove_newlines(text):
     """Remove new lines characters and replace them by a space.
@@ -197,6 +204,29 @@ class SystemMessageNode(NodeGroup):
         )
 
 
+class LinkNode(Node):
+    def __init__(self, rst_node, refname=None, uri=None, text=None):
+        Node.__init__(self, rst_node)
+        self.refname = refname
+        self.uri = uri
+        if text:
+            self.rawtext = text
+        else:
+            self.rawtext = uri
+
+    def to_gemtext(self):
+        if not self.uri:
+            raise ValueError("Link URI not resolved!")
+        if self.rawtext == self.uri:
+            return "=> %s" % self.uri
+        else:
+            return "=> %s %s" % (self.uri, self.rawtext)
+
+
+class LinkGroup(NodeGroup):
+    pass
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -337,6 +367,32 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self.nodes.append(paragraph_node)
 
     def depart_paragraph(self, node):
+        nodes = self._split_nodes(node)
+        paragraph_node = nodes.pop(0)
+
+        if len(nodes) == 1 and nodes[0].rawtext == paragraph_node.rawtext:
+            self.nodes.append(nodes[0])
+        else:
+            self.nodes.append(paragraph_node)
+            if nodes:
+                link_group_node = LinkGroup(node)
+                link_group_node.nodes = nodes
+                self.nodes.append(link_group_node)
+
+    # reference
+
+    def visit_reference(self, node):
+        link_node = LinkNode(
+            node,
+            refname=node.attributes["refname"]
+            if "refname" in node.attributes
+            else None,
+            uri=node.attributes["refuri"] if "refuri" in node.attributes else None,
+            text=node.attributes["name"] if "name" in node.attributes else None,
+        )
+        self.nodes.append(link_node)
+
+    def depart_reference(self, node):
         pass
 
     # section

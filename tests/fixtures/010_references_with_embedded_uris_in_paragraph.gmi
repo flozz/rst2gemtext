@@ -1,0 +1,14 @@
+=> http://example.org
+
+=> gemini://example.org
+
+=> http://example.org Example link 1
+
+=> http://example.org Example link 2
+
+=> gemini://example.org Example Gemini link
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pharetra varius blandit. Proin semper tincidunt nibh at pretium. Donec mollis vehicula libero, non ultrices arcu porttitor eget. Vivamus eget urna semper. Duis nec consectetur turpis, at dignissim tortor. Cras auctor ultrices turpis sit amet aliquet.
+
+=> http://example.org/1 pharetra varius blandit
+=> http://example.org/2 Duis nec consectetur
