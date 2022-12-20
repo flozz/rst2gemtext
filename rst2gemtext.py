@@ -7,6 +7,7 @@ from io import StringIO
 import docutils.frontend
 import docutils.nodes
 import docutils.parsers.rst
+import docutils.transforms.references
 import docutils.utils
 import docutils.utils.roman
 import docutils.writers
@@ -233,6 +234,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         "strong",
         "emphasis",
         "literal",
+        "target",
     ]
 
     def __init__(self, document):
@@ -453,10 +455,16 @@ class GemtextWriter(docutils.writers.Writer):
 
     def __init__(self):
         docutils.writers.Writer.__init__(self)
+        self.transforms = [
+            docutils.transforms.references.ExternalTargets,
+        ]
         self.visitor = None
 
     def translate(self):
         self.visitor = GemtextTranslator(self.document)
+        for Transform in self.transforms:
+            transform = Transform(self.document)
+            transform.apply()
         self.document.walkabout(self.visitor)
         self.output = (
             "\n\n".join([node.to_gemtext() for node in self.visitor.nodes]) + "\n"

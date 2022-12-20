@@ -82,7 +82,7 @@ reStructuredText nodes to support:
 * [ ] superscript
 * [x] system_message
 * [ ] table
-* [ ] target
+* [x] target
 * [ ] tbody
 * [ ] term
 * [x] Text
