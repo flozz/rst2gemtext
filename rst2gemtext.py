@@ -4,11 +4,11 @@ import sys
 import argparse
 from io import StringIO
 
+import docutils.frontend
+import docutils.nodes
 import docutils.parsers.rst
 import docutils.utils
 import docutils.utils.roman
-import docutils.frontend
-import docutils.nodes
 import docutils.writers
 
 # XXX Hack: monkeypatch docutils to support gemini:// URIs
@@ -43,10 +43,7 @@ def parse_rst(rst_text):
     """
 
     parser = docutils.parsers.rst.Parser()
-    components = (docutils.parsers.rst.Parser,)
-    settings = docutils.frontend.OptionParser(
-        components=components
-    ).get_default_values()
+    settings = docutils.frontend.get_default_settings(docutils.parsers.rst.Parser)
     document = docutils.utils.new_document("document", settings=settings)
     parser.parse(rst_text, document)
     return document
