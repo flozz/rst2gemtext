@@ -453,12 +453,16 @@ def main(args=sys.argv[1:]):
     params = parser.parse_args(args)
     input_rst = params.input_rst.read()
 
+    document = parse_rst(input_rst)
+
     if params.print_xml:
-        document = parse_rst(input_rst)
         print(document.asdom().toprettyxml(indent="  "))
 
-    output_gemtext = convert(input_rst)
-    params.output_gemtext.write(output_gemtext)
+    writer = GemtextWriter()
+    writer.write(document, params.output_gemtext)
+
+    for message in writer.visitor.messages:
+        print(message)
 
 
 if __name__ == "__main__":
