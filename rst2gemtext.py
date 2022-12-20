@@ -303,7 +303,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         nodes = self._split_nodes(node)
         list_item_node = nodes.pop(0)
         for node in nodes:
-            if type(node) in [BulletListNode]:
+            if type(node) in [BulletListNode, EnumaratedListNode]:
                 self.nodes.append(list_item_node)
                 self.nodes.append(node)
                 list_item_node = ListItemNode(node)
