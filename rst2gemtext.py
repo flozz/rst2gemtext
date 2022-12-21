@@ -283,11 +283,30 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._current_node = None  # To catch eventual errors
         self.nodes.append(block_quote_node)
 
-    def depart_block_quote(self, node):
-        nodes = self._split_nodes(node)
+    def depart_block_quote(self, rst_node):
+        nodes = self._split_nodes(rst_node)
         block_quote_node = nodes.pop(0)
-        block_quote_node.nodes = nodes
-        self.nodes.append(block_quote_node)
+
+        links = []
+
+        for node in nodes:
+            if type(node) is LinkNode:
+                links.append(node)
+            elif type(node) is LinkGroupNode:
+                links.extend(node.nodes)
+            else:
+                block_quote_node.nodes.append(node)
+
+        if block_quote_node.nodes:
+            self.nodes.append(block_quote_node)
+
+        if links:
+            if len(links) == 1:
+                self.nodes.append(links[0])
+            else:
+                link_group_node = LinkGroupNode(None)
+                link_group_node.nodes = links
+                self.nodes.append(link_group_node)
 
     # bullet_list
 
