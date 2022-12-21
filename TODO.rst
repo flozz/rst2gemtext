@@ -92,6 +92,6 @@ reStructuredText nodes to support:
 * [x] title
 * [ ] title_reference
 * [ ] topic
-* [ ] transition
+* [x] transition
 * [ ] version
 * [ ] warning

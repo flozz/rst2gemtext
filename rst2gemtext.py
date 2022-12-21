@@ -225,6 +225,11 @@ class LinkGroupNode(NodeGroup):
     pass
 
 
+class SeparatorNode(Node):
+    def to_gemtext(self):
+        return "-" * 80
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -470,6 +475,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self.nodes.append(title_node)
 
     def depart_title(self, node):
+        pass
+
+    # transition
+
+    def visit_transition(self, rst_node):
+        self.nodes.append(SeparatorNode(rst_node))
+
+    def depart_transition(self, rst_node):
         pass
 
     # ==== DEFAULT ====
