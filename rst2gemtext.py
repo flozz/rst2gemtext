@@ -283,8 +283,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     # block_quote
 
-    def visit_block_quote(self, node):
-        block_quote_node = BlockQuoteNode(node)
+    def visit_block_quote(self, rst_node):
+        block_quote_node = BlockQuoteNode(rst_node)
         self._current_node = None  # To catch eventual errors
         self.nodes.append(block_quote_node)
 
@@ -315,8 +315,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     # bullet_list
 
-    def visit_bullet_list(self, node):
-        bullet_list_node = BulletListNode(node)
+    def visit_bullet_list(self, rst_node):
+        bullet_list_node = BulletListNode(rst_node)
         self._current_node = None  # To catch eventual errors
         self.nodes.append(bullet_list_node)
 
@@ -343,29 +343,29 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     # enumerated_list
 
-    def visit_enumerated_list(self, node):
+    def visit_enumerated_list(self, rst_node):
         enumerated_list_node = EnumaratedListNode(
-            node,
-            enumtype=node.attributes["enumtype"],
-            prefix=node.attributes["prefix"],
-            suffix=node.attributes["suffix"],
-            start=node.attributes["start"] if "start" in node.attributes else 1,
+            rst_node,
+            enumtype=rst_node.attributes["enumtype"],
+            prefix=rst_node.attributes["prefix"],
+            suffix=rst_node.attributes["suffix"],
+            start=rst_node.attributes["start"] if "start" in rst_node.attributes else 1,
         )
         self._current_node = None  # To catch eventual errors
         self.nodes.append(enumerated_list_node)
 
-    def depart_enumerated_list(self, node):
-        self.depart_bullet_list(node)
+    def depart_enumerated_list(self, rst_node):
+        self.depart_bullet_list(rst_node)
 
     # list_item
 
-    def visit_list_item(self, node):
-        list_item_node = ListItemNode(node)
+    def visit_list_item(self, rst_node):
+        list_item_node = ListItemNode(rst_node)
         self._current_node = None  # To catch eventual errors
         self.nodes.append(list_item_node)
 
-    def depart_list_item(self, node):
-        nodes = self._split_nodes(node)
+    def depart_list_item(self, rst_node):
+        nodes = self._split_nodes(rst_node)
         list_item_node = nodes.pop(0)
         for node in nodes:
             if type(node) in [BulletListNode, EnumaratedListNode]:
@@ -383,28 +383,28 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     # literal_block
 
-    def visit_literal_block(self, node):
+    def visit_literal_block(self, rst_node):
         alt = ""
-        for class_ in node.attributes["classes"]:
+        for class_ in rst_node.attributes["classes"]:
             if class_ != "code":
                 alt = class_
                 break
-        preformatted_text_node = PreformattedTextNode(node, alt=alt)
+        preformatted_text_node = PreformattedTextNode(rst_node, alt=alt)
         self._current_node = preformatted_text_node
         self.nodes.append(preformatted_text_node)
 
-    def depart_literal_block(self, node):
+    def depart_literal_block(self, rst_node):
         pass
 
     # paragraph
 
-    def visit_paragraph(self, node):
-        paragraph_node = ParagraphNode(node)
+    def visit_paragraph(self, rst_node):
+        paragraph_node = ParagraphNode(rst_node)
         self._current_node = paragraph_node
         self.nodes.append(paragraph_node)
 
-    def depart_paragraph(self, node):
-        nodes = self._split_nodes(node)
+    def depart_paragraph(self, rst_node):
+        nodes = self._split_nodes(rst_node)
         paragraph_node = nodes.pop(0)
 
         if len(nodes) == 1 and nodes[0].rawtext == paragraph_node.rawtext:
@@ -412,69 +412,71 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         else:
             self.nodes.append(paragraph_node)
             if nodes:
-                link_group_node = LinkGroupNode(node)
+                link_group_node = LinkGroupNode(rst_node)
                 link_group_node.nodes = nodes
                 self.nodes.append(link_group_node)
 
     # reference
 
-    def visit_reference(self, node):
+    def visit_reference(self, rst_node):
         link_node = LinkNode(
-            node,
-            refname=node.attributes["refname"]
-            if "refname" in node.attributes
+            rst_node,
+            refname=rst_node.attributes["refname"]
+            if "refname" in rst_node.attributes
             else None,
-            uri=node.attributes["refuri"] if "refuri" in node.attributes else None,
-            text=node.attributes["name"] if "name" in node.attributes else None,
+            uri=rst_node.attributes["refuri"]
+            if "refuri" in rst_node.attributes
+            else None,
+            text=rst_node.attributes["name"] if "name" in rst_node.attributes else None,
         )
         self.nodes.append(link_node)
 
-    def depart_reference(self, node):
+    def depart_reference(self, rst_node):
         pass
 
     # section
 
-    def visit_section(self, node):
+    def visit_section(self, rst_node):
         self._section_level += 1
 
-    def depart_section(self, node):
+    def depart_section(self, rst_node):
         self._section_level -= 1
 
     # system_message
 
-    def visit_system_message(self, node):
+    def visit_system_message(self, rst_node):
         system_message_node = SystemMessageNode(
-            node,
-            level=node.attributes["level"],
-            line=node.attributes["line"],
-            source=node.attributes["source"],
-            type_=node.attributes["type"],
+            rst_node,
+            level=rst_node.attributes["level"],
+            line=rst_node.attributes["line"],
+            source=rst_node.attributes["source"],
+            type_=rst_node.attributes["type"],
         )
         self._current_node = None  # To catch eventual errors
         self.nodes.append(system_message_node)
 
-    def depart_system_message(self, node):
-        nodes = self._split_nodes(node)
+    def depart_system_message(self, rst_node):
+        nodes = self._split_nodes(rst_node)
         system_message_node = nodes.pop(0)
         system_message_node.nodes = nodes
         self.messages.append(system_message_node)
 
     # Text (leaf)
 
-    def visit_Text(self, node):
-        self._current_node.append_text(node.astext())
+    def visit_Text(self, rst_node):
+        self._current_node.append_text(rst_node.astext())
 
-    def depart_Text(self, node):
+    def depart_Text(self, rst_node):
         pass
 
     # title
 
-    def visit_title(self, node):
-        title_node = TitleNode(node, level=self._section_level)
+    def visit_title(self, rst_node):
+        title_node = TitleNode(rst_node, level=self._section_level)
         self._current_node = title_node
         self.nodes.append(title_node)
 
-    def depart_title(self, node):
+    def depart_title(self, rst_node):
         pass
 
     # transition
@@ -487,11 +489,11 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     # ==== DEFAULT ====
 
-    def default_visit(self, node):
+    def default_visit(self, rst_node):
         """Override for generic, uniform traversals."""
         pass
 
-    def default_departure(self, node):
+    def default_departure(self, rst_node):
         """Override for generic, uniform traversals."""
         pass
 
