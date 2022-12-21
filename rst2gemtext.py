@@ -230,6 +230,15 @@ class SeparatorNode(Node):
         return "-" * 80
 
 
+class RawNode(Node):
+    def __init__(self, rst_node, format_):
+        Node.__init__(self, rst_node)
+        self.format = format_
+
+    def to_gemtext(self):
+        return self.rawtext
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -415,6 +424,17 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 link_group_node = LinkGroupNode(rst_node)
                 link_group_node.nodes = nodes
                 self.nodes.append(link_group_node)
+
+    # raw
+
+    def visit_raw(self, rst_node):
+        raw_node = RawNode(rst_node, rst_node.attributes["format"])
+        self._current_node = raw_node
+        self.nodes.append(raw_node)
+
+    def depart_raw(self, rst_node):
+        if self.nodes[-1].format not in ["gemtext", "gmi"]:
+            self.nodes.pop()
 
     # reference
 

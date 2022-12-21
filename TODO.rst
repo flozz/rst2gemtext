@@ -66,7 +66,7 @@ reStructuredText nodes to support:
 * [x] paragraph
 * [ ] pending
 * [ ] problematic
-* [ ] raw
+* [x] raw
 * [x] reference
 * [ ] revision
 * [ ] row

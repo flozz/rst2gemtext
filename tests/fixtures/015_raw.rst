@@ -1,0 +1,17 @@
+.. raw:: HTML
+
+   <a href="http://example.org/" class="button btn-large">
+     <i class="fa fa-link"></i>My Example
+   </a>
+
+.. raw:: gemtext
+
+   => http://example.org My Example
+
+.. raw:: Gemtext
+
+   An other raw
+
+.. raw:: gmi
+
+   foobar
