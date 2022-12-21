@@ -1,0 +1,43 @@
+=> http://example.org/
+
+...
+
+=> http://example.org/ foobar
+
+...
+
+=> http://example.org/1
+=> http://example.org/2
+
+...
+
+=> http://example.org/1
+=> http://example.org/2
+
+...
+
+* Lorem ipsum
+* dolor sit amet
+* consectetur adipiscing elit
+
+=> http://example.org ipsum
+=> http://example.org consectetur
+
+...
+
+* 1. Lorem ipsum
+* 2. dolor sit amet
+* 3. consectetur adipiscing elit
+
+=> http://example.org ipsum
+=> http://example.org consectetur
+
+...
+
+* Item 1
+* Item 2 with a link
+* 1. Subitem 1
+* 2. Subitem 2 with an other link
+
+=> http://example.org/ link
+=> http://example.org/ other link

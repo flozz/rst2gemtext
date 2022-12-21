@@ -221,7 +221,7 @@ class LinkNode(Node):
             return "=> %s %s" % (self.uri, self.rawtext)
 
 
-class LinkGroup(NodeGroup):
+class LinkGroupNode(NodeGroup):
     pass
 
 
@@ -296,11 +296,26 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._current_node = None  # To catch eventual errors
         self.nodes.append(bullet_list_node)
 
-    def depart_bullet_list(self, node):
-        nodes = self._split_nodes(node)
+    def depart_bullet_list(self, rst_node):
+        nodes = self._split_nodes(rst_node)
         bullet_list_node = nodes.pop(0)
-        bullet_list_node.nodes = nodes
-        self.nodes.append(bullet_list_node)
+        links = []
+        for node in nodes:
+            if type(node) is LinkNode:
+                links.append(node)
+            elif type(node) is LinkGroupNode:
+                links.extend(node.nodes)
+            else:
+                bullet_list_node.nodes.append(node)
+        if bullet_list_node.nodes:
+            self.nodes.append(bullet_list_node)
+        if links:
+            if len(links) == 1:
+                self.nodes.append(links[0])
+            else:
+                link_group_node = LinkGroupNode(None)
+                link_group_node.nodes = links
+                self.nodes.append(link_group_node)
 
     # enumerated_list
 
@@ -316,10 +331,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self.nodes.append(enumerated_list_node)
 
     def depart_enumerated_list(self, node):
-        nodes = self._split_nodes(node)
-        enumerated_list_node = nodes.pop(0)
-        enumerated_list_node.nodes = nodes
-        self.nodes.append(enumerated_list_node)
+        self.depart_bullet_list(node)
 
     # list_item
 
@@ -336,6 +348,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 self.nodes.append(list_item_node)
                 self.nodes.append(node)
                 list_item_node = ListItemNode(node)
+            elif type(node) in [LinkNode, LinkGroupNode]:
+                self.nodes.append(node)
             else:
                 if list_item_node.rawtext:
                     list_item_node.append_text(" ")
@@ -374,7 +388,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         else:
             self.nodes.append(paragraph_node)
             if nodes:
-                link_group_node = LinkGroup(node)
+                link_group_node = LinkGroupNode(node)
                 link_group_node.nodes = nodes
                 self.nodes.append(link_group_node)
 
