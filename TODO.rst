@@ -76,8 +76,8 @@ reStructuredText nodes to support:
 * [ ] status
 * [x] strong
 * [ ] subscript
-* [ ] substitution_definition
-* [ ] substitution_reference
+* [x] substitution_definition
+* [x] substitution_reference
 * [ ] subtitle
 * [ ] superscript
 * [x] system_message

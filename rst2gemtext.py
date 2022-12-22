@@ -251,6 +251,11 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         "target",
     ]
 
+    #: Nodes that should be completely ignored with their content
+    _SKIPPED_NODES = [
+        "substitution_definition",
+    ]
+
     def __init__(self, document):
         docutils.nodes.GenericNodeVisitor.__init__(self, document)
 
@@ -262,18 +267,29 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._current_node = None
         #: The current section level (used for the titles level)
         self._section_level = 0
+        #: The node that is being skipped
+        self._skipped_node = None
 
-    def dispatch_visit(self, node):
-        if node.tagname in self._NOP_NODES:
+    def dispatch_visit(self, rst_node):
+        if self._skipped_node:
+            return
+        if rst_node.tagname in self._SKIPPED_NODES:
+            self._skipped_node = rst_node
+            return
+        if rst_node.tagname in self._NOP_NODES:
             return
 
-        docutils.nodes.GenericNodeVisitor.dispatch_visit(self, node)
+        docutils.nodes.GenericNodeVisitor.dispatch_visit(self, rst_node)
 
-    def dispatch_departure(self, node):
-        if node.tagname in self._NOP_NODES:
+    def dispatch_departure(self, rst_node):
+        if self._skipped_node:
+            if self._skipped_node is rst_node:
+                self._skipped_node = None
+            return
+        if rst_node.tagname in self._NOP_NODES:
             return
 
-        docutils.nodes.GenericNodeVisitor.dispatch_departure(self, node)
+        docutils.nodes.GenericNodeVisitor.dispatch_departure(self, rst_node)
 
     def _split_nodes(self, rst_node):
         """Split the node list on the given rst_node.
@@ -432,7 +448,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         if len(nodes) == 1 and nodes[0].rawtext == paragraph_node.rawtext:
             self.nodes.append(nodes[0])
         else:
-            self.nodes.append(paragraph_node)
+            if paragraph_node.to_gemtext().strip():
+                self.nodes.append(paragraph_node)
             if nodes:
                 link_group_node = LinkGroupNode(rst_node)
                 link_group_node.nodes = nodes
@@ -537,6 +554,7 @@ class GemtextWriter(docutils.writers.Writer):
     def __init__(self):
         docutils.writers.Writer.__init__(self)
         self.transforms = [
+            docutils.transforms.references.Substitutions,
             docutils.transforms.references.ExternalTargets,
         ]
         self.visitor = None

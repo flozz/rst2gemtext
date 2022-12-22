@@ -1,0 +1,8 @@
+Lorem  ipsum
+
+=> ./foobar.png Foobar
+
+=> ./foo.png foo
+=> ./bar.png bar
+
+Lorem ipsum dolot sit amet...
