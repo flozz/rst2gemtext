@@ -239,6 +239,10 @@ class RawNode(Node):
         return self.rawtext
 
 
+class FigureNode(NodeGroup):
+    pass
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -366,6 +370,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 link_group_node.nodes = links
                 self.nodes.append(link_group_node)
 
+    # caption
+
+    def visit_caption(self, rst_node):
+        self.visit_paragraph(rst_node)
+
+    def depart_caption(self, rst_node):
+        self.depart_paragraph(rst_node)
+
     # enumerated_list
 
     def visit_enumerated_list(self, rst_node):
@@ -381,6 +393,51 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_enumerated_list(self, rst_node):
         self.depart_bullet_list(rst_node)
+
+    # figure
+
+    def visit_figure(self, rst_node):
+        figure_node = FigureNode(rst_node)
+        self._current_node = None
+        self.nodes.append(figure_node)
+
+    def depart_figure(self, rst_node):
+        nodes = self._split_nodes(rst_node)
+        figure_node = nodes.pop(0)
+        for node in nodes:
+            if (
+                type(node) is LinkNode
+                and figure_node.nodes
+                and type(figure_node.nodes[-1]) is LinkNode
+            ):
+                prev_node = figure_node.nodes.pop()
+                if prev_node.uri == node.uri:
+                    if prev_node.rawtext and not node.rawtext:
+                        figure_node.nodes.append(prev_node)
+                    else:
+                        figure_node.nodes.append(node)
+                else:
+                    # Swap link / image
+                    figure_node.nodes.append(node)
+                    figure_node.nodes.append(prev_node)
+            elif type(node) is ParagraphNode:
+                caption_is_alttext = False
+                for fnode in figure_node.nodes:
+                    if fnode.rawtext == node.rawtext:
+                        caption_is_alttext = True
+                        break
+                if not caption_is_alttext:
+                    figure_node.nodes.append(node)
+            else:
+                figure_node.nodes.append(node)
+        if (
+            type(figure_node.nodes[0]) is LinkNode
+            and type(figure_node.nodes[-1]) is ParagraphNode
+        ):
+            if figure_node.nodes[0].rawtext == figure_node.nodes[0].uri:
+                caption = figure_node.nodes.pop()
+                figure_node.nodes[0].rawtext = caption.rawtext
+        self.nodes.append(figure_node)
 
     # image
 

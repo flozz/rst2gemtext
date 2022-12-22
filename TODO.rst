@@ -12,7 +12,7 @@ reStructuredText nodes to support:
 * [ ] authors
 * [x] block_quote
 * [x] bullet_list
-* [ ] caption
+* [x] caption
 * [ ] caution
 * [ ] citation
 * [ ] citation_reference
@@ -39,7 +39,7 @@ reStructuredText nodes to support:
 * [ ] field_body
 * [ ] field_list
 * [ ] field_name
-* [ ] figure
+* [x] figure
 * [ ] footer
 * [ ] footnote
 * [ ] footnote_reference

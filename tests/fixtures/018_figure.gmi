@@ -1,0 +1,24 @@
+=> ./image1.png
+
+=> ./image2.png Image 2 alternative text
+
+=> ./image3.png Image 3 caption
+
+=> ./image3.png Image 3 alternative text
+Image 3 caption
+
+=> ./image3.png Image 4
+
+=> ./image5.png
+
+=> ./image6.png Image 6
+
+=> ./image7.png Image 7
+=> http://example.org/
+Caption for image 7
+
+=> ./image8.png Image 8
+=> http://example.org/
+
+=> ./image9.png Caption for image 9
+=> http://example.org/
