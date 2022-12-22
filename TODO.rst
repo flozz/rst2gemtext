@@ -18,7 +18,7 @@ reStructuredText nodes to support:
 * [ ] citation_reference
 * [ ] classifier
 * [ ] colspec
-* [ ] comment
+* [x] comment
 * [ ] contact
 * [ ] copyright
 * [ ] danger

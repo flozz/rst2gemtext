@@ -249,14 +249,15 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     #: Nodes to ignore as there is no equivalent markup in Gemtext.
     #: NOTE: the text inside the notes will be added to the parent node.
     _NOP_NODES = [
-        "strong",
         "emphasis",
         "literal",
+        "strong",
         "target",
     ]
 
     #: Nodes that should be completely ignored with their content
     _SKIPPED_NODES = [
+        "comment",
         "substitution_definition",
     ]
 
