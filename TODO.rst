@@ -46,7 +46,7 @@ reStructuredText nodes to support:
 * [ ] generated
 * [ ] header
 * [ ] hint
-* [ ] image
+* [x] image
 * [ ] important
 * [ ] inline
 * [ ] label

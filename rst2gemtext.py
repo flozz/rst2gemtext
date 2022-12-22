@@ -366,6 +366,19 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def depart_enumerated_list(self, rst_node):
         self.depart_bullet_list(rst_node)
 
+    # image
+
+    def visit_image(self, rst_node):
+        link_node = LinkNode(
+            rst_node,
+            uri=rst_node.attributes["uri"],
+            text=rst_node.attributes["alt"] if "alt" in rst_node.attributes else None,
+        )
+        self.nodes.append(link_node)
+
+    def depart_image(self, rst_node):
+        pass
+
     # list_item
 
     def visit_list_item(self, rst_node):
