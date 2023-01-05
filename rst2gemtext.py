@@ -257,6 +257,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     #: Nodes that should be completely ignored with their content
     _SKIPPED_NODES = [
+        "field_list",  # TODO Handle fields as metadata
         "comment",
         "substitution_definition",
     ]
