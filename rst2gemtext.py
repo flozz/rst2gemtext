@@ -42,7 +42,6 @@ def parse_rst(rst_text):
     :param str rst_text: The reStructuredText to parse.
     :rtype: docutils.nodes.document
     """
-
     parser = docutils.parsers.rst.Parser()
     settings = docutils.frontend.get_default_settings(docutils.parsers.rst.Parser)
     document = docutils.utils.new_document("document", settings=settings)
@@ -624,9 +623,25 @@ class GemtextWriter(docutils.writers.Writer):
             transform = Transform(self.document)
             transform.apply()
         self.document.walkabout(self.visitor)
+        self._before_translate_output_generation_hook()
         self.output = (
             "\n\n".join([node.to_gemtext() for node in self.visitor.nodes]) + "\n"
         )
+
+    def _before_translate_output_generation_hook(self):
+        """Method called just before generating the final GemText document. At
+        this stage, the reStructuredText document is parsed, tranformed, and
+        converted into GemText nodes.
+
+        This method can be used by subclasses to manipulate the GemText node
+        before the final document is generated.
+
+        ::
+
+            for node in self.visitor.nodes:
+                do_something(node)
+        """
+        pass
 
 
 def convert(rst_text):
