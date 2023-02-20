@@ -19,7 +19,9 @@ Requirements
 Installation
 ------------
 
-TODO
+::
+
+    pip install rst2gemtext
 
 
 Usage
@@ -152,7 +154,38 @@ Want to support this project?
 Changelog
 ---------
 
-TODO
+* **[NEXT]** (changes on ``master``, but not released yet):
+
+  * Nothing yet ;)
+
+* **v0.1.0:**
+
+  * Initial release.
+  * Supported rst nodes:
+
+    * block_quote
+    * bullet_list
+    * caption
+    * comment
+    * emphasis
+    * enumerated_list
+    * figure
+    * image
+    * list_item
+    * literal
+    * literal_block
+    * paragraph
+    * raw
+    * reference
+    * section
+    * strong
+    * substitution_definition
+    * substitution_reference
+    * system_message
+    * target
+    * Text
+    * title
+    * transition
 
 
 .. |GitHub| image:: https://img.shields.io/github/stars/flozz/rst2gemtext?label=GitHub&logo=github

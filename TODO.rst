@@ -3,7 +3,8 @@ TODO
 
 reStructuredText nodes to support:
 
-* [ ] abbrevicronym
+* [ ] abbreviation
+* [ ] acronym
 * [ ] address
 * [ ] admonition
 * [ ] attention
