@@ -36,15 +36,18 @@ def remove_newlines(text):
     return text.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
 
 
-def parse_rst(rst_text):
+def parse_rst(rst_text, source_path="document"):
     """Parses a reStructuredText document.
 
     :param str rst_text: The reStructuredText to parse.
+    :param str source_path: The path of the source reStructuredText file
+                            (optional, but required if the document contains an
+                            ``include`` directive)
     :rtype: docutils.nodes.document
     """
     parser = docutils.parsers.rst.Parser()
     settings = docutils.frontend.get_default_settings(docutils.parsers.rst.Parser)
-    document = docutils.utils.new_document("document", settings=settings)
+    document = docutils.utils.new_document(source_path, settings=settings)
     parser.parse(rst_text, document)
     return document
 
@@ -644,15 +647,18 @@ class GemtextWriter(docutils.writers.Writer):
         pass
 
 
-def convert(rst_text):
+def convert(rst_text, source_path="document"):
     """Convert the input reStructuredText to Gemtext.
 
     :param str rst_text: The input reStructuredText.
+    :param str source_path: The path of the source reStructuredText file
+                            (optional, but required if the document contains an
+                            ``include`` directive)
 
     :rtype: str
     :return: The converted Gemtext.
     """
-    document = parse_rst(rst_text)
+    document = parse_rst(rst_text, source_path)
     output_io = StringIO()
     writer = GemtextWriter()
     writer.write(document, output_io)
@@ -687,7 +693,7 @@ def main(args=sys.argv[1:]):
     params = parser.parse_args(args)
     input_rst = params.input_rst.read()
 
-    document = parse_rst(input_rst)
+    document = parse_rst(input_rst, source_path=params.input_rst.name)
 
     if params.print_xml:
         print(document.asdom().toprettyxml(indent="  "))

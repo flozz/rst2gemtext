@@ -33,13 +33,15 @@ class Test_parse_rst:
 class Test_convert:
     @pytest.mark.parametrize("input_rst_file", [f.name for f in _FIXTURES])
     def test_rst_document(self, input_rst_file):
-        with open(_FIXTURES_PATH / input_rst_file, "r") as file_:
+        source_rst_path = (_FIXTURES_PATH / input_rst_file).as_posix()
+
+        with open(source_rst_path, "r") as file_:
             input_rst = file_.read()
 
         with open((_FIXTURES_PATH / input_rst_file).with_suffix(".gmi"), "r") as file_:
             expected_gemtext = file_.read()
 
-        output_gemtext = rst2gemtext.convert(input_rst)
+        output_gemtext = rst2gemtext.convert(input_rst, source_rst_path)
         assert output_gemtext == expected_gemtext
 
 

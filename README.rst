@@ -156,7 +156,8 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * Nothing yet ;)
+  * Pass the source file name to docutils to allow the ``include`` directive to
+    work (@flozz)
 
 * **v0.1.0:**
 
