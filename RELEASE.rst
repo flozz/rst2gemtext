@@ -15,13 +15,7 @@ This file is a memo for the maintainer.
 2. Publish PyPI package
 -----------------------
 
-Publish source dist and wheels on PyPI.
-
-* ``python setup.py sdist``
-* ``pip install twine``
-* ``twine upload dist/*``
-
-TODO: configure CI to automate this
+Automated :)
 
 
 3. Publish Github Release
