@@ -156,6 +156,10 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
+  * Nothing yet :)
+
+* **v0.2.0:**
+
   * Pass the source file name to docutils to allow the ``include`` directive to
     work (@flozz)
   * Added a basic support of the ``table`` (and associatad) nodes (@flozz)
