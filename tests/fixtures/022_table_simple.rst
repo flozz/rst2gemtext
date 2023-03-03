@@ -1,0 +1,8 @@
+Truth table for "not":
+
+=====  =====
+  A    not A
+=====  =====
+False  True
+True   False
+=====  =====
