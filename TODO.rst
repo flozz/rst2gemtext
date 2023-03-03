@@ -18,7 +18,7 @@ reStructuredText nodes to support:
 * [ ] citation
 * [ ] citation_reference
 * [ ] classifier
-* [ ] colspec
+* [x] colspec
 * [x] comment
 * [ ] contact
 * [ ] copyright
@@ -33,7 +33,7 @@ reStructuredText nodes to support:
 * [ ] doctest_block
 * [ ] document
 * [x] emphasis
-* [ ] entry
+* [x] entry
 * [x] enumerated_list
 * [ ] error
 * [ ] field
@@ -70,7 +70,7 @@ reStructuredText nodes to support:
 * [x] raw
 * [x] reference
 * [ ] revision
-* [ ] row
+* [x] row
 * [ ] rubric
 * [x] section
 * [ ] sidebar
@@ -82,13 +82,13 @@ reStructuredText nodes to support:
 * [ ] subtitle
 * [ ] superscript
 * [x] system_message
-* [ ] table
+* [x] table
 * [x] target
-* [ ] tbody
+* [x] tbody
 * [ ] term
 * [x] Text
-* [ ] tgroup
-* [ ] thead
+* [x] tgroup
+* [x] thead
 * [ ] tip
 * [x] title
 * [ ] title_reference

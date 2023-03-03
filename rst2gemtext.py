@@ -48,6 +48,7 @@ def parse_rst(rst_text, source_path="document"):
     parser = docutils.parsers.rst.Parser()
     settings = docutils.frontend.get_default_settings(docutils.parsers.rst.Parser)
     document = docutils.utils.new_document(source_path, settings=settings)
+    document._original_rst = rst_text
     parser.parse(rst_text, document)
     return document
 
@@ -277,6 +278,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._section_level = 0
         #: The node that is being skipped
         self._skipped_node = None
+
+        # Check the document object is patched and contains the original reST
+        # text. This is required for tables
+        if not hasattr(document, "_original_rst"):
+            raise ValueError(
+                "The given document object do not contains the _original_rst attribute. "
+                "Please use the rst2gemtext.parse_rst method to create the document object."
+            )
 
     def dispatch_visit(self, rst_node):
         if self._skipped_node:
@@ -571,6 +580,27 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         system_message_node = nodes.pop(0)
         system_message_node.nodes = nodes
         self.messages.append(system_message_node)
+
+    # table
+
+    def visit_table(self, rst_node):
+        preformatted_text_node = PreformattedTextNode(rst_node)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(preformatted_text_node)
+
+    def depart_table(self, rst_node):
+        # TODO: handle links
+        nodes = self._split_nodes(rst_node)
+        preformatted_text_node = nodes.pop(0)
+
+        line_min = min([node.rst_node.line for node in nodes if node.rst_node.line]) - 1
+        line_max = max([node.rst_node.line for node in nodes if node.rst_node.line]) + 1
+
+        preformatted_text_node.append_text(
+            "\n".join(self.document._original_rst.split("\n")[line_min - 1 : line_max])
+        )
+
+        self.nodes.append(preformatted_text_node)
 
     # Text (leaf)
 
