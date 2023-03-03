@@ -158,6 +158,7 @@ Changelog
 
   * Pass the source file name to docutils to allow the ``include`` directive to
     work (@flozz)
+  * Added a basic support of the ``table`` (and associatad) nodes (@flozz)
 
 * **v0.1.0:**
 

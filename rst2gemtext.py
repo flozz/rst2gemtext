@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import re
 import sys
 import argparse
+import math
 from io import StringIO
 
 import docutils.frontend
@@ -593,12 +595,30 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         nodes = self._split_nodes(rst_node)
         preformatted_text_node = nodes.pop(0)
 
-        line_min = min([node.rst_node.line for node in nodes if node.rst_node.line]) - 1
-        line_max = max([node.rst_node.line for node in nodes if node.rst_node.line]) + 1
+        title = ""
+        line_min = math.inf
+        line_max = 0
+
+        for node in nodes:
+            if isinstance(node, TitleNode):
+                title = node.rawtext
+                continue
+            if not node.rst_node.line:
+                continue
+            line_min = min(line_min, node.rst_node.line)
+            line_max = max(line_max, node.rst_node.line)
+        line_min -= 1
+        line_max += 1
+
+        table_lines = self.document._original_rst.split("\n")[line_min - 1 : line_max]
+        indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
 
         preformatted_text_node.append_text(
-            "\n".join(self.document._original_rst.split("\n")[line_min - 1 : line_max])
+            "\n".join([line[indent:] for line in table_lines])
         )
+
+        if title:
+            preformatted_text_node.alt = title
 
         self.nodes.append(preformatted_text_node)
 
