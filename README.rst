@@ -156,6 +156,10 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
+  * Nothing yet :)
+
+* **v0.3.0:**
+
   * Handle admonitons (``admonition``, ``attention``, ``caution``, ``danger``,
     ``error``, ``hint``, ``important``, ``note``, ``tip`` and ``warning``
     nodes) (@flozz)

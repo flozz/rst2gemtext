@@ -13,7 +13,7 @@ if os.path.isfile("README.rst"):
 
 setup(
     name="rst2gemtext",
-    version="0.2.0",
+    version="0.3.0",
     description="Converts reStructuredText to Gemtext (Gemini markup format)",
     url="https://github.com/flozz/rst2gemtext",
     project_urls={
