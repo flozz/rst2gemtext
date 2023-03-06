@@ -6,15 +6,15 @@ reStructuredText nodes to support:
 * [ ] abbreviation
 * [ ] acronym
 * [ ] address
-* [ ] admonition
-* [ ] attention
+* [x] admonition
+* [x] attention
 * [ ] attribution
 * [ ] author
 * [ ] authors
 * [x] block_quote
 * [x] bullet_list
 * [x] caption
-* [ ] caution
+* [x] caution
 * [ ] citation
 * [ ] citation_reference
 * [ ] classifier
@@ -22,7 +22,7 @@ reStructuredText nodes to support:
 * [x] comment
 * [ ] contact
 * [ ] copyright
-* [ ] danger
+* [x] danger
 * [ ] date
 * [ ] decoration
 * [ ] definition
@@ -35,7 +35,7 @@ reStructuredText nodes to support:
 * [x] emphasis
 * [x] entry
 * [x] enumerated_list
-* [ ] error
+* [x] error
 * [ ] field
 * [ ] field_body
 * [ ] field_list
@@ -46,9 +46,9 @@ reStructuredText nodes to support:
 * [ ] footnote_reference
 * [ ] generated
 * [ ] header
-* [ ] hint
+* [x] hint
 * [x] image
-* [ ] important
+* [x] important
 * [ ] inline
 * [ ] label
 * [ ] legend
@@ -56,7 +56,7 @@ reStructuredText nodes to support:
 * [x] list_item
 * [x] literal
 * [x] literal_block
-* [ ] note
+* [x] note
 * [ ] option
 * [ ] option_argument
 * [ ] option_group
@@ -89,10 +89,10 @@ reStructuredText nodes to support:
 * [x] Text
 * [x] tgroup
 * [x] thead
-* [ ] tip
+* [x] tip
 * [x] title
 * [ ] title_reference
 * [ ] topic
 * [x] transition
 * [ ] version
-* [ ] warning
+* [x] warning

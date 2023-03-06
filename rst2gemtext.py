@@ -248,6 +248,48 @@ class FigureNode(NodeGroup):
     pass
 
 
+class AdmonitionNode(NodeGroup):
+    def __init__(self, rst_node, type_=None, title=None):
+        NodeGroup.__init__(self, rst_node)
+        self.type = type_
+        self.title = title
+
+    def gen_title(self):
+        if self.title:
+            return self.title
+        if self.type == "note":
+            return "📝️ Note:"
+        if self.type == "hint":
+            return "💡️ Hint"
+        if self.type == "tip":
+            return "💡️ Tip"
+        if self.type == "important":
+            return "‼️ Important"
+        if self.type == "attention":
+            return "⚠️ Attention"
+        if self.type == "warning":
+            return "⚠️ Warning"
+        if self.type == "caution":
+            return "⚠️ Caution"
+        if self.type == "danger":
+            return "⚠️ Danger"
+        if self.type == "error":
+            return "⛔️ Error"
+        return ""
+
+    def to_gemtext(self):
+        result = "-" * 80
+        result += "\n"
+        result += self.gen_title()
+        result += "\n"
+        result += "-" * 80
+        result += "\n"
+        result += NodeGroup.to_gemtext(self)
+        result += "\n"
+        result += "-" * 80
+        return result
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -325,6 +367,31 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     # ==== RST NODES ====
 
+    # admonition
+
+    def visit_admonition(self, rst_node, type_=None):
+        admonition_node = AdmonitionNode(rst_node, type_)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(admonition_node)
+
+    def depart_admonition(self, rst_node):
+        nodes = self._split_nodes(rst_node)
+        admonition_node = nodes.pop(0)
+        if admonition_node.type is None:
+            if isinstance(nodes[0], TitleNode):
+                title_node = nodes.pop(0)
+                admonition_node.title = title_node.rawtext
+        admonition_node.nodes = nodes
+        self.nodes.append(admonition_node)
+
+    # attention (admonition)
+
+    def visit_attention(self, rst_node):
+        self.visit_admonition(rst_node, type_="attention")
+
+    def depart_attention(self, rst_node):
+        self.depart_admonition(rst_node)
+
     # block_quote
 
     def visit_block_quote(self, rst_node):
@@ -393,6 +460,22 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def depart_caption(self, rst_node):
         self.depart_paragraph(rst_node)
 
+    # caution (admonition)
+
+    def visit_caution(self, rst_node):
+        self.visit_admonition(rst_node, type_="caution")
+
+    def depart_caution(self, rst_node):
+        self.depart_admonition(rst_node)
+
+    # danger (admonition)
+
+    def visit_danger(self, rst_node):
+        self.visit_admonition(rst_node, type_="danger")
+
+    def depart_danger(self, rst_node):
+        self.depart_admonition(rst_node)
+
     # enumerated_list
 
     def visit_enumerated_list(self, rst_node):
@@ -408,6 +491,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_enumerated_list(self, rst_node):
         self.depart_bullet_list(rst_node)
+
+    # error (admonition)
+
+    def visit_error(self, rst_node):
+        self.visit_admonition(rst_node, type_="error")
+
+    def depart_error(self, rst_node):
+        self.depart_admonition(rst_node)
 
     # figure
 
@@ -454,6 +545,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 figure_node.nodes[0].rawtext = caption.rawtext
         self.nodes.append(figure_node)
 
+    # hint (admonition)
+
+    def visit_hint(self, rst_node):
+        self.visit_admonition(rst_node, type_="hint")
+
+    def depart_hint(self, rst_node):
+        self.depart_admonition(rst_node)
+
     # image
 
     def visit_image(self, rst_node):
@@ -466,6 +565,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_image(self, rst_node):
         pass
+
+    # important (admonition)
+
+    def visit_important(self, rst_node):
+        self.visit_admonition(rst_node, type_="important")
+
+    def depart_important(self, rst_node):
+        self.depart_admonition(rst_node)
 
     # list_item
 
@@ -505,6 +612,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_literal_block(self, rst_node):
         pass
+
+    # note (admonition)
+
+    def visit_note(self, rst_node):
+        self.visit_admonition(rst_node, type_="note")
+
+    def depart_note(self, rst_node):
+        self.depart_admonition(rst_node)
 
     # paragraph
 
@@ -630,6 +745,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def depart_Text(self, rst_node):
         pass
 
+    # tip (admonition)
+
+    def visit_tip(self, rst_node):
+        self.visit_admonition(rst_node, type_="tip")
+
+    def depart_tip(self, rst_node):
+        self.depart_admonition(rst_node)
+
     # title
 
     def visit_title(self, rst_node):
@@ -647,6 +770,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_transition(self, rst_node):
         pass
+
+    # warning (admonition)
+
+    def visit_warning(self, rst_node):
+        self.visit_admonition(rst_node, type_="warning")
+
+    def depart_warning(self, rst_node):
+        self.depart_admonition(rst_node)
 
     # ==== DEFAULT ====
 
