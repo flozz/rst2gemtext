@@ -156,6 +156,10 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
+  * Nothing yet ;)
+
+* **v0.3.1:**
+
   * Fixed truncated tables when last row contains bullet lists (@flozz, #1)
 
 * **v0.3.0:**
