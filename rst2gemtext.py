@@ -38,6 +38,39 @@ def remove_newlines(text):
     return text.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
 
 
+def flatten_node_tree(nodes):
+    """Iterates recursively on given nodes and returns a flat list of the
+    nodes.
+
+    :param list<Node> nodes: A list of ``Node``.
+
+    :rtype: list<Node>
+    """
+    result_nodes = []
+    for node in nodes:
+        if isinstance(node, NodeGroup):
+            result_nodes += flatten_node_tree(node.nodes)
+        else:
+            result_nodes.append(node)
+    return result_nodes
+
+
+def search_lines_recursive(rst_node):
+    """Search recusrively for line numbers in rst nodes.
+
+    :param rst_node: any rst node from docutils.
+
+    :rtype: list<int>
+    """
+    lines = []
+    if rst_node.line:
+        lines.append(rst_node.line)
+    if rst_node.children:
+        for child_rst_node in rst_node.children:
+            lines += search_lines_recursive(child_rst_node)
+    return lines
+
+
 def parse_rst(rst_text, source_path="document"):
     """Parses a reStructuredText document.
 
@@ -714,14 +747,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         line_min = math.inf
         line_max = 0
 
-        for node in nodes:
+        for node in flatten_node_tree(nodes):
             if isinstance(node, TitleNode):
                 title = node.rawtext
                 continue
-            if not node.rst_node.line:
-                continue
-            line_min = min(line_min, node.rst_node.line)
-            line_max = max(line_max, node.rst_node.line)
+            lines = search_lines_recursive(node.rst_node)
+            if lines:
+                line_min = min(line_min, *lines)
+                line_max = max(line_max, *lines)
         line_min -= 1
         line_max += 1
 
