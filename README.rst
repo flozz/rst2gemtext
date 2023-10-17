@@ -11,7 +11,7 @@ rst2gemtext aims to convert **reStructuredText** markup to **Gemtext**, the mark
 Requirements
 ------------
 
-* Python >= 3.7
+* Python >= 3.8
 * docutils
 * pygments
 
@@ -130,11 +130,11 @@ and run the tests::
 
 You can use following commands to run the tests only on a certain Python version (the corresponding Python interpreter must be installed on your machine)::
 
-    nox --session test-3.7
     nox --session test-3.8
     nox --session test-3.9
     nox --session test-3.10
     nox --session test-3.11
+    nox --session test-3.12
 
 You can also fix coding style errors automatically with::
 
@@ -156,23 +156,25 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * Nothing yet ;)
+  * chore: Added Python 3.12 support
+  * chore!: Removed Python 3.7 support
 
 * **v0.3.1:**
 
-  * Fixed truncated tables when last row contains bullet lists (@flozz, #1)
+  * fix: Fixed truncated tables when last row contains bullet lists (@flozz, #1)
 
 * **v0.3.0:**
 
-  * Handle admonitons (``admonition``, ``attention``, ``caution``, ``danger``,
-    ``error``, ``hint``, ``important``, ``note``, ``tip`` and ``warning``
-    nodes) (@flozz)
+  * feat: Handle admonitons (``admonition``, ``attention``, ``caution``,
+    ``danger``, ``error``, ``hint``, ``important``, ``note``, ``tip`` and
+    ``warning`` nodes) (@flozz)
 
 * **v0.2.0:**
 
-  * Pass the source file name to docutils to allow the ``include`` directive to
-    work (@flozz)
-  * Added a basic support of the ``table`` (and associatad) nodes (@flozz)
+  * feat: Pass the source file name to docutils to allow the ``include``
+    directive to work (@flozz)
+  * feat: Added a basic support of the ``table`` (and associated) nodes
+    (@flozz)
 
 * **v0.1.0:**
 
