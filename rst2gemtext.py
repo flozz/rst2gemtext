@@ -691,12 +691,16 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def visit_reference(self, rst_node):
         link_node = LinkNode(
             rst_node,
-            refname=rst_node.attributes["refname"]
-            if "refname" in rst_node.attributes
-            else None,
-            uri=rst_node.attributes["refuri"]
-            if "refuri" in rst_node.attributes
-            else None,
+            refname=(
+                rst_node.attributes["refname"]
+                if "refname" in rst_node.attributes
+                else None
+            ),
+            uri=(
+                rst_node.attributes["refuri"]
+                if "refuri" in rst_node.attributes
+                else None
+            ),
             text=rst_node.attributes["name"] if "name" in rst_node.attributes else None,
         )
         self.nodes.append(link_node)
