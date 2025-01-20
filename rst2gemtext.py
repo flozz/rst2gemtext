@@ -689,6 +689,16 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     # reference
 
     def visit_reference(self, rst_node):
+        text = ""
+        for child_node in rst_node.children:
+            if child_node.tagname == "image":
+                continue
+            elif child_node.tagname != "#text":
+                raise ValueError(
+                    "Unexpected tag found in a reference: %s" % child_node.tagname
+                )
+            text += child_node.astext()
+        text = remove_newlines(text)
         link_node = LinkNode(
             rst_node,
             refname=(
@@ -701,7 +711,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 if "refuri" in rst_node.attributes
                 else None
             ),
-            text=rst_node.attributes["name"] if "name" in rst_node.attributes else None,
+            text=text if text else None,
         )
         self.nodes.append(link_node)
 

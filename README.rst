@@ -156,8 +156,9 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * chore: Added Python 3.12, 3.13 support
-  * chore!: Removed Python 3.7, 3.8 support
+  * fix: Fixed bad link list deduplication when a non-breaking space is used in anchor text (@flozz)
+  * misc(deps): Added Python 3.12, 3.13 support (@flozz)
+  * misc(deps)!: Removed Python 3.7, 3.8 support (@flozz)
 
 * **v0.3.1:**
 

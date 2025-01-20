@@ -33,3 +33,9 @@
 
   1. Subitem 1
   2. Subitem 2 with an `other link <http://example.org/>`__
+
+...
+
+* `More complicated link list <http://example.org/>`__
+* `With : nbsp <http://example.org/>`__
+* `And « spécial » chars ⭐ <http://example.org/>`__

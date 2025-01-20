@@ -41,3 +41,9 @@
 
 => http://example.org/ link
 => http://example.org/ other link
+
+...
+
+=> http://example.org/ More complicated link list
+=> http://example.org/ With : nbsp
+=> http://example.org/ And « spécial » chars ⭐
