@@ -92,7 +92,7 @@ reStructuredText nodes to support:
 * [x] tip
 * [x] title
 * [ ] title_reference
-* [ ] topic
+* [x] topic
 * [x] transition
 * [ ] version
 * [x] warning

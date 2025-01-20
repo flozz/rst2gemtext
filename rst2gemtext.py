@@ -340,6 +340,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         "field_list",  # TODO Handle fields as metadata
         "comment",
         "substitution_definition",
+        "topic",  # .. contents:: (ToC)
     ]
 
     def __init__(self, document):
