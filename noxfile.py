@@ -26,4 +26,4 @@ def black_fix(session):
 def test(session):
     session.install("pytest")
     session.install("-e", ".")
-    session.run("pytest", "-vv")
+    session.run("pytest", "-vv", "--doctest-modules", "rst2gemtext.py", "tests/")

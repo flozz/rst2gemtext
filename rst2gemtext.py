@@ -22,6 +22,28 @@ if "gemini" not in docutils.utils.urischemes.schemes:
 # XXX
 
 
+def convert_to_unix_end_of_line(text):
+    """Replace Windows and old macOS end of line by Unix end of lines.
+
+    Replaces:
+
+    * CR LF (``\r\n``): Windows style end of lines
+    * CR (``\r``): Legacy macOS end of lines (macOS 9 and earlier)
+
+    By:
+
+    * LF (``\n``): Unix style end of lines
+
+    :param str text: The text to process.
+    :rtype: str
+    :return: The text converted with unix end of lines.
+
+    >>> convert_to_unix_end_of_line("Windows\\r\\nmacOS 9\\rand Unix\\n\\nEOL")
+    'Windows\\nmacOS 9\\nand Unix\\n\\nEOL'
+    """
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
 def remove_newlines(text):
     """Remove new lines characters and replace them by a space.
 
@@ -34,8 +56,11 @@ def remove_newlines(text):
     :param str text: The text to cleanup.
     :rtype: str
     :return: The cleaned text.
+
+    >>> remove_newlines("Windows\\r\\nmacOS 9\\rand Unix\\n\\nEOL")
+    'Windows macOS 9 and Unix  EOL'
     """
-    return text.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+    return convert_to_unix_end_of_line(text).replace("\n", " ")
 
 
 def flatten_node_tree(nodes):
@@ -60,15 +85,44 @@ def search_lines_recursive(rst_node):
 
     :param rst_node: any rst node from docutils.
 
-    :rtype: list<int>
+    :rtype: list<Node>
+    :returns: A flat list of Nodes with the ``Node.line`` attribute defined.
     """
     lines = []
     if rst_node.line:
-        lines.append(rst_node.line)
+        lines.append(rst_node)
     if rst_node.children:
         for child_rst_node in rst_node.children:
             lines += search_lines_recursive(child_rst_node)
     return lines
+
+
+def get_node_end_line(rst_node):
+    """Get the line where the given node ends.
+
+    :param Node rst_node: The reStructuredText node.
+
+    :rtype: int
+
+    >>> class Node:
+    ...    pass
+
+    >>> node = Node()
+    >>> node.line = 40
+    >>> node.astext = lambda: "foobar"
+    >>> get_node_end_line(node)
+    40
+
+    >>> node = Node()
+    >>> node.line = 40
+    >>> node.astext = lambda: "line1\\nline2\\r\\nline3\\rline4"
+    >>> get_node_end_line(node)
+    43
+    """
+    node_start_line = rst_node.line
+    node_height = len(convert_to_unix_end_of_line(rst_node.astext()).split("\n"))
+    node_end_line = node_start_line + node_height - 1
+    return node_end_line
 
 
 def parse_rst(rst_text, source_path="document"):
@@ -766,10 +820,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
             if isinstance(node, TitleNode):
                 title = node.rawtext
                 continue
-            lines = search_lines_recursive(node.rst_node)
-            if lines:
-                line_min = min(line_min, *lines)
-                line_max = max(line_max, *lines)
+            nodes = search_lines_recursive(node.rst_node)
+            for node in nodes:
+                node_start_line = node.line
+                node_end_line = get_node_end_line(node)
+                if node_start_line < line_min:
+                    line_min = node_start_line
+                elif node_end_line > line_max:
+                    line_max = node_end_line
         line_min -= 1
         line_max += 1
 

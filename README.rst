@@ -158,6 +158,7 @@ Changelog
 
   * feat: Skip topic nodes as the ToC will not be generated (@flozz)
   * fix: Fixed bad link list deduplication when a non-breaking space is used in anchor text (@flozz)
+  * fix: Fixed troncated tables when multiline content is present in the last row (@flozz)
   * misc(deps): Added Python 3.12, 3.13 support (@flozz)
   * misc(deps)!: Removed Python 3.7, 3.8 support (@flozz)
 
