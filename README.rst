@@ -156,6 +156,10 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
+  * Nothing yet :)
+
+* **v0.4.0:**
+
   * feat: Skip topic nodes as the ToC will not be generated (@flozz)
   * fix: Fixed bad link list deduplication when a non-breaking space is used in anchor text (@flozz)
   * fix: Fixed troncated tables when multiline content is present in the last row (@flozz)
