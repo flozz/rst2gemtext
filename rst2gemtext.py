@@ -633,21 +633,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         nodes = self._split_nodes(rst_node)
         figure_node = nodes.pop(0)
         for node in nodes:
-            if (
-                type(node) is LinkNode
-                and figure_node.nodes
-                and type(figure_node.nodes[-1]) is LinkNode
-            ):
-                prev_node = figure_node.nodes.pop()
-                if prev_node.uri == node.uri:
-                    if prev_node.rawtext and not node.rawtext:
-                        figure_node.nodes.append(prev_node)
-                    else:
-                        figure_node.nodes.append(node)
-                else:
-                    # Swap link / image
-                    figure_node.nodes.append(node)
-                    figure_node.nodes.append(prev_node)
+            if type(node) is LinkGroupNode:
+                figure_node.nodes += node.nodes
             elif type(node) is ParagraphNode:
                 caption_is_alttext = False
                 for fnode in figure_node.nodes:
@@ -805,7 +792,25 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self.nodes.append(link_node)
 
     def depart_reference(self, rst_node):
-        pass
+        nodes = self._split_nodes(rst_node)
+        reference_node = nodes.pop(0)
+        if len(nodes) == 1 and type(nodes[0]) is LinkNode:
+            image_node = nodes[0]
+            if image_node.uri == reference_node.uri:
+                # Merge image and link (keep the one that may have an alt text)
+                if image_node.rawtext != image_node.uri:
+                    self.nodes.append(image_node)
+                else:
+                    self.nodes.append(reference_node)
+            else:
+                # Group and swap link / image
+                link_group_node = LinkGroupNode(rst_node)
+                link_group_node.nodes.append(image_node)
+                link_group_node.nodes.append(reference_node)
+                self.nodes.append(link_group_node)
+        else:
+            self.nodes.append(reference_node)
+            self.nodes += nodes
 
     # section
 

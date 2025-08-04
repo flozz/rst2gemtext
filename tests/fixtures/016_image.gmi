@@ -1,3 +1,11 @@
 => ./foo.png
 
 => ./bar.png Bar
+
+=> ./baz.png Baz
+
+=> ./fizz.png Fizz
+=> http://example.org/
+
+=> ./buzz.png
+=> http://example.org/
