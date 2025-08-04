@@ -156,7 +156,7 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * Nothing yet :)
+  * fix: Fixed ImportError with docutils >= 0.22 (#7, @flozz)
 
 * **v0.4.0:**
 

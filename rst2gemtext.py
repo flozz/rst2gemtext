@@ -6,13 +6,18 @@ import argparse
 import math
 from io import StringIO
 
+import docutils
 import docutils.frontend
 import docutils.nodes
 import docutils.parsers.rst
 import docutils.transforms.references
 import docutils.utils
-import docutils.utils.roman
 import docutils.writers
+
+if docutils.__version_info__.major == 0 and docutils.__version_info__.minor < 22:
+    import docutils.utils.roman
+else:
+    import docutils.utils._roman_numerals
 
 # XXX Hack: monkeypatch docutils to support gemini:// URIs
 import docutils.utils.urischemes
@@ -20,6 +25,20 @@ import docutils.utils.urischemes
 if "gemini" not in docutils.utils.urischemes.schemes:
     docutils.utils.urischemes.schemes["gemini"] = ""
 # XXX
+
+
+def _to_roman(number):
+    """Converts the given integer to Roman number.
+
+    :param int number: The input number.
+
+    :rtype: str
+    :return: The Roman number string.
+    """
+    if docutils.__version_info__.major == 0 and docutils.__version_info__.minor < 22:
+        return docutils.utils.roman.toRoman(number)
+    else:
+        return docutils.utils._roman_numerals.RomanNumeral(number).to_uppercase()
 
 
 def convert_to_unix_end_of_line(text):
@@ -251,10 +270,10 @@ class EnumaratedListNode(BulletListNode):
         return self._to_loweralpha(number).upper()
 
     def _to_lowerroman(self, number):
-        return docutils.utils.roman.toRoman(number).lower()
+        return _to_roman(number).lower()
 
     def _to_upperroman(self, number):
-        return docutils.utils.roman.toRoman(number)
+        return _to_roman(number)
 
     def to_gemtext(self):
         items = []
