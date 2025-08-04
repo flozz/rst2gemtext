@@ -199,6 +199,11 @@ class ParagraphNode(Node):
         return remove_newlines(self.rawtext)
 
 
+class AttributionNode(Node):
+    def to_gemtext(self):
+        return "-- %s" % remove_newlines(self.rawtext)
+
+
 class TitleNode(Node):
     def __init__(self, rst_node, level=1):
         Node.__init__(self, rst_node)
@@ -498,6 +503,16 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_attention(self, rst_node):
         self.depart_admonition(rst_node)
+
+    # attribution (epigraph)
+
+    def visit_attribution(self, rst_node):
+        attribution_node = AttributionNode(rst_node)
+        self._current_node = attribution_node
+        self.nodes.append(attribution_node)
+
+    def depart_attribution(self, rst_node):
+        pass
 
     # block_quote
 

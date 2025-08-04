@@ -8,7 +8,7 @@ reStructuredText nodes to support:
 * [ ] address
 * [x] admonition
 * [x] attention
-* [ ] attribution
+* [x] attribution
 * [ ] author
 * [ ] authors
 * [x] block_quote
