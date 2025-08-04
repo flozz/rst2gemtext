@@ -3,7 +3,6 @@ import nox
 
 PYTHON_FILES = [
     "rst2gemtext.py",
-    "setup.py",
     "noxfile.py",
     "tests",
 ]
@@ -11,9 +10,10 @@ PYTHON_FILES = [
 
 @nox.session(reuse_venv=True)
 def lint(session):
-    session.install("flake8", "black")
+    session.install("-e", ".[dev]")
     session.run("flake8", *PYTHON_FILES)
     session.run("black", "--check", "--diff", "--color", *PYTHON_FILES)
+    session.run("validate-pyproject", "pyproject.toml")
 
 
 @nox.session(reuse_venv=True)

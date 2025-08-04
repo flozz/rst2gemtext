@@ -156,6 +156,7 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
+  * misc(packaging): Modernized packaging: replaced ``setup.py`` and ``setuptools``  by ``pyproject.toml`` and ``flit`` (@flozz)
   * feat(node): Added support for ``attribution`` nodes used by the ``epigraph`` directive (#8, @flozz)
   * fix: Fixed ImportError with docutils >= 0.22 (#7, @flozz)
 
