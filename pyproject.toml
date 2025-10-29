@@ -16,7 +16,7 @@ keywords = [
 ]
 license = "GPL-3.0-or-later"
 license-files = ["COPYING"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "docutils",
     "pygments",
@@ -41,11 +41,11 @@ source = "https://github.com/flozz/rst2gemtext"
 documentation = "https://github.com/flozz/rst2gemtext/blob/master/README.rst"
 changelog = "https://github.com/flozz/rst2gemtext?tab=readme-ov-file#changelog"
 issues = "https://github.com/flozz/rst2gemtext/issues"
-Chat = "https://discord.gg/P77sWhuSs4"
+chat = "https://discord.gg/P77sWhuSs4"
 donate = "https://github.com/flozz/rst2gemtext#support-this-project"
 
 [tool.black]
-target-version = ["py39"]
+target-version = ["py310"]
 
 [tool.flake8]
 ignore = [
