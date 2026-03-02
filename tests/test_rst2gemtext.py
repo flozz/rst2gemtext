@@ -5,7 +5,6 @@ import docutils.nodes
 
 import rst2gemtext
 
-
 _FIXTURES_PATH = pathlib.Path(__file__).parent / "fixtures"
 _FIXTURES = list(_FIXTURES_PATH.glob("*.rst"))
 

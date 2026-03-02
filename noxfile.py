@@ -1,6 +1,5 @@
 import nox
 
-
 PYTHON_FILES = [
     "rst2gemtext.py",
     "noxfile.py",
