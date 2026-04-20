@@ -401,6 +401,19 @@ class AdmonitionNode(NodeGroup):
         return result
 
 
+class FootnoteNode(NodeGroup):
+    def __init__(self, rst_node, footnote_refs, refname):
+        NodeGroup.__init__(self, rst_node)
+        self._footnote_refs = footnote_refs
+        self._refname = refname
+
+    def to_gemtext(self):
+        return "[%i] %s" % (
+            (self._footnote_refs.index(self._refname) + 1),
+            "\n\n".join([n.to_gemtext() for n in self.nodes]),
+        )
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -434,6 +447,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._section_level = 0
         #: The node that is being skipped
         self._skipped_node = None
+        #: Footnote references
+        self._footnote_refs = []
 
         # Check the document object is patched and contains the original reST
         # text. This is required for tables
@@ -653,6 +668,40 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 caption = figure_node.nodes.pop()
                 figure_node.nodes[0].rawtext = caption.rawtext
         self.nodes.append(figure_node)
+
+    # footnote
+
+    def visit_footnote(self, rst_node):
+        if "names" in rst_node.attributes:
+            footnote_node = FootnoteNode(
+                rst_node,
+                self._footnote_refs,
+                rst_node.attributes["names"][0],
+            )
+        self._current_node = None
+        self.nodes.append(footnote_node)
+
+    def depart_footnote(self, rst_node):
+        nodes = self._split_nodes(rst_node)
+        footnote_node = nodes.pop(0)
+        footnote_node.nodes += nodes
+        # for node in nodes:
+        # pass
+        self.nodes.append(footnote_node)
+
+    # footnote_reference
+
+    def visit_footnote_reference(self, rst_node):
+        if "refname" in rst_node.attributes:
+            refname = rst_node.attributes["refname"]
+            self._footnote_refs.append(refname)
+            self._current_node.append_text(
+                "[%i]" % (self._footnote_refs.index(refname) + 1)
+            )
+        # XXX
+
+    def depart_footnote_reference(self, rst_node):
+        pass
 
     # hint (admonition)
 
