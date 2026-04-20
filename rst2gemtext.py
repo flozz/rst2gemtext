@@ -407,14 +407,13 @@ class AdmonitionNode(NodeGroup):
 
 
 class FootnoteNode(NodeGroup):
-    def __init__(self, rst_node, footnote_refs, refname):
+    def __init__(self, rst_node, number):
         NodeGroup.__init__(self, rst_node)
-        self._footnote_refs = footnote_refs
-        self._refname = refname
+        self._number = number
 
     def to_gemtext(self):
         return "[%i] %s" % (
-            (self._footnote_refs.index(self._refname) + 1),
+            self._number,
             "\n\n".join([n.to_gemtext() for n in self.nodes]),
         )
 
@@ -677,11 +676,15 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     # footnote
 
     def visit_footnote(self, rst_node):
-        if "names" in rst_node.attributes:
+        if "auto" in rst_node.attributes:
             footnote_node = FootnoteNode(
                 rst_node,
-                self._footnote_refs,
-                rst_node.attributes["names"][0],
+                self._footnote_refs.index(rst_node.attributes["names"][0]) + 1,
+            )
+        else:
+            footnote_node = FootnoteNode(
+                rst_node,
+                int(rst_node.attributes["names"][0]),
             )
         self._current_node = None
         self.nodes.append(footnote_node)
@@ -689,24 +692,37 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     def depart_footnote(self, rst_node):
         nodes = self._split_nodes(rst_node)
         footnote_node = nodes.pop(0)
-        footnote_node.nodes += nodes
-        # for node in nodes:
-        # pass
+        for node in nodes:
+            if type(node) is LabelNode:
+                continue
+            footnote_node.nodes.append(node)
         self.nodes.append(footnote_node)
 
     # footnote_reference
 
     def visit_footnote_reference(self, rst_node):
-        if "refname" in rst_node.attributes:
+        if "auto" in rst_node.attributes:
+            # Footnote with explicit refs and auto number
+            if "refname" in rst_node.attributes:
+                refname = rst_node.attributes["refname"]
+                self._footnote_refs.append(refname)
+                self._current_node.append_text(
+                    "[%i]" % (self._footnote_refs.index(refname) + 1)
+                )
+
+            # Footnote with auto number only
+            else:
+                pass  # XXX
+
+        # Footnote with explicit number
+        else:
             refname = rst_node.attributes["refname"]
             self._footnote_refs.append(refname)
-            self._current_node.append_text(
-                "[%i]" % (self._footnote_refs.index(refname) + 1)
-            )
-        # XXX
+            self._current_node.append_text("[")
 
     def depart_footnote_reference(self, rst_node):
-        pass
+        if "auto" not in rst_node.attributes:
+            self._current_node.append_text("]")
 
     # hint (admonition)
 
