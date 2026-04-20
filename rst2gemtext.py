@@ -199,6 +199,11 @@ class ParagraphNode(Node):
         return remove_newlines(self.rawtext)
 
 
+class LabelNode(Node):
+    def to_gemtext(self):
+        return "%s:" % remove_newlines(self.rawtext)
+
+
 class AttributionNode(Node):
     def to_gemtext(self):
         return "-- %s" % remove_newlines(self.rawtext)
@@ -731,6 +736,16 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_important(self, rst_node):
         self.depart_admonition(rst_node)
+
+    # label
+
+    def visit_label(self, rst_node):
+        label_node = LabelNode(rst_node)
+        self._current_node = label_node
+        self.nodes.append(label_node)
+
+    def depart_label(self, rst_node):
+        pass
 
     # list_item
 

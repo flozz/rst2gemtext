@@ -50,7 +50,7 @@ reStructuredText nodes to support:
 * [x] image
 * [x] important
 * [ ] inline
-* [ ] label
+* [x] label
 * [ ] legend
 * [ ] line_block
 * [x] list_item
