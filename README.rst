@@ -157,6 +157,7 @@ Changelog
 * **[NEXT]** (changes on ``master``, but not released yet):
 
   * feat(label): Handled ``label`` nodes (@flozz)
+  * feat(footnote): Handled ``footnote`` and ``footnote_reference`` nodes (@flozz)
   * misc(deps): Added Python 3.14 support (@flozz)
   * misc(deps)!: Removed Python 3.9 support (@flozz)
 

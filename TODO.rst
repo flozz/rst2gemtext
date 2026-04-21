@@ -42,8 +42,8 @@ reStructuredText nodes to support:
 * [ ] field_name
 * [x] figure
 * [ ] footer
-* [ ] footnote
-* [ ] footnote_reference
+* [x] footnote
+* [x] footnote_reference
 * [ ] generated
 * [ ] header
 * [x] hint

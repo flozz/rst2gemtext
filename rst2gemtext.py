@@ -677,10 +677,22 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def visit_footnote(self, rst_node):
         if "auto" in rst_node.attributes:
-            footnote_node = FootnoteNode(
-                rst_node,
-                self._footnote_refs.index(rst_node.attributes["names"][0]) + 1,
-            )
+            # Footnote with explicit refs and auto number
+            if "names" in rst_node.attributes and rst_node.attributes["names"]:
+                footnote_node = FootnoteNode(
+                    rst_node,
+                    self._footnote_refs.index(rst_node.attributes["names"][0]) + 1,
+                )
+            # Footnote with auto number only
+            else:
+                node_id = rst_node.attributes["ids"][0]
+                if not node_id.startswith("footnote-"):
+                    raise Exception("Cannot handle footnote")
+                footnote_node = FootnoteNode(
+                    rst_node,
+                    int(node_id[9:]),
+                )
+        # Footnote with explicit number
         else:
             footnote_node = FootnoteNode(
                 rst_node,
@@ -712,7 +724,10 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
             # Footnote with auto number only
             else:
-                pass  # XXX
+                node_id = rst_node.attributes["ids"][0]
+                if not node_id.startswith("footnote-reference-"):
+                    raise Exception("Cannot handle footnote reference")
+                self._current_node.append_text("[%s]" % node_id[19:])
 
         # Footnote with explicit number
         else:
