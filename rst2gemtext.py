@@ -199,6 +199,11 @@ class ParagraphNode(Node):
         return remove_newlines(self.rawtext)
 
 
+class LabelNode(Node):
+    def to_gemtext(self):
+        return "%s:" % remove_newlines(self.rawtext)
+
+
 class AttributionNode(Node):
     def to_gemtext(self):
         return "-- %s" % remove_newlines(self.rawtext)
@@ -401,6 +406,18 @@ class AdmonitionNode(NodeGroup):
         return result
 
 
+class FootnoteNode(NodeGroup):
+    def __init__(self, rst_node, number):
+        NodeGroup.__init__(self, rst_node)
+        self._number = number
+
+    def to_gemtext(self):
+        return "[%i] %s" % (
+            self._number,
+            "\n\n".join([n.to_gemtext() for n in self.nodes]),
+        )
+
+
 class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     """Translate reStructuredText text nodes to Gemini text nodes."""
 
@@ -434,6 +451,8 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         self._section_level = 0
         #: The node that is being skipped
         self._skipped_node = None
+        #: Footnote references
+        self._footnote_refs = []
 
         # Check the document object is patched and contains the original reST
         # text. This is required for tables
@@ -654,6 +673,72 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
                 figure_node.nodes[0].rawtext = caption.rawtext
         self.nodes.append(figure_node)
 
+    # footnote
+
+    def visit_footnote(self, rst_node):
+        if "auto" in rst_node.attributes:
+            # Footnote with explicit refs and auto number
+            if "names" in rst_node.attributes and rst_node.attributes["names"]:
+                footnote_node = FootnoteNode(
+                    rst_node,
+                    self._footnote_refs.index(rst_node.attributes["names"][0]) + 1,
+                )
+            # Footnote with auto number only
+            else:
+                node_id = rst_node.attributes["ids"][0]
+                if not node_id.startswith("footnote-"):
+                    raise Exception("Cannot handle footnote")
+                footnote_node = FootnoteNode(
+                    rst_node,
+                    int(node_id[9:]),
+                )
+        # Footnote with explicit number
+        else:
+            footnote_node = FootnoteNode(
+                rst_node,
+                int(rst_node.attributes["names"][0]),
+            )
+        self._current_node = None
+        self.nodes.append(footnote_node)
+
+    def depart_footnote(self, rst_node):
+        nodes = self._split_nodes(rst_node)
+        footnote_node = nodes.pop(0)
+        for node in nodes:
+            if type(node) is LabelNode:
+                continue
+            footnote_node.nodes.append(node)
+        self.nodes.append(footnote_node)
+
+    # footnote_reference
+
+    def visit_footnote_reference(self, rst_node):
+        if "auto" in rst_node.attributes:
+            # Footnote with explicit refs and auto number
+            if "refname" in rst_node.attributes:
+                refname = rst_node.attributes["refname"]
+                self._footnote_refs.append(refname)
+                self._current_node.append_text(
+                    "[%i]" % (self._footnote_refs.index(refname) + 1)
+                )
+
+            # Footnote with auto number only
+            else:
+                node_id = rst_node.attributes["ids"][0]
+                if not node_id.startswith("footnote-reference-"):
+                    raise Exception("Cannot handle footnote reference")
+                self._current_node.append_text("[%s]" % node_id[19:])
+
+        # Footnote with explicit number
+        else:
+            refname = rst_node.attributes["refname"]
+            self._footnote_refs.append(refname)
+            self._current_node.append_text("[")
+
+    def depart_footnote_reference(self, rst_node):
+        if "auto" not in rst_node.attributes:
+            self._current_node.append_text("]")
+
     # hint (admonition)
 
     def visit_hint(self, rst_node):
@@ -682,6 +767,16 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_important(self, rst_node):
         self.depart_admonition(rst_node)
+
+    # label
+
+    def visit_label(self, rst_node):
+        label_node = LabelNode(rst_node)
+        self._current_node = label_node
+        self.nodes.append(label_node)
+
+    def depart_label(self, rst_node):
+        pass
 
     # list_item
 

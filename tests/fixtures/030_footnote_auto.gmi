@@ -1,0 +1,9 @@
+Lorem ipsum dolor sit amet, consectetur [1] adipiscing elit. Phasellus id elit lacinia, hendrerit ligula eu, venenatis tortor. Ut hendrerit [2] mollis lectus sit amet faucibus. Pellentesque [3] nec ultricies lorem.
+
+[1] consectetur: Lorem ipsum dolor sit amet.
+
+[2] hendrerit: Donec facilisis, neque non lacinia pulvinar, orci neque congue nibh, sit amet gravida lacus augue sed augue.
+
+[3] Pellentesque: Suspendisse potenti.
+
+foot text

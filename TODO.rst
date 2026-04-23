@@ -42,15 +42,15 @@ reStructuredText nodes to support:
 * [ ] field_name
 * [x] figure
 * [ ] footer
-* [ ] footnote
-* [ ] footnote_reference
+* [x] footnote
+* [x] footnote_reference
 * [ ] generated
 * [ ] header
 * [x] hint
 * [x] image
 * [x] important
 * [ ] inline
-* [ ] label
+* [x] label
 * [ ] legend
 * [ ] line_block
 * [x] list_item
