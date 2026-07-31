@@ -966,11 +966,15 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         line_max += 1
 
         table_lines = self.document._original_rst.split("\n")[line_min - 1 : line_max]
-        indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
 
-        preformatted_text_node.append_text(
-            "\n".join([line[indent:] for line in table_lines])
-        )
+        if not table_lines:
+            # CSV table without row information – the raw content is used without indentation
+            preformatted_text_node.append_text(preformatted_text_node.rawtext)
+        else:
+            indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
+            preformatted_text_node.append_text(
+                "\n".join([line[indent:] for line in table_lines])
+            )
 
         if title:
             preformatted_text_node.alt = title
