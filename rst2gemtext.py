@@ -27,6 +27,34 @@ if "gemini" not in docutils.utils.urischemes.schemes:
 # XXX
 
 
+# XXX Hack: override the csv-table directive
+import docutils.parsers.rst.directives
+import docutils.parsers.rst.directives.tables
+
+
+class PatchedCSVTable(docutils.parsers.rst.directives.tables.CSVTable):
+
+    def run(self):
+        nodes = docutils.parsers.rst.directives.tables.CSVTable.run(self)
+        if len(nodes) != 1:
+            raise Exception("Unexpected number of nodes for the csv-table")
+        csv_data, source = self.get_csv_data()
+        table = self.parse_csv_data_into_rows(
+            csv_data, self.DocutilsDialect(self.options), source
+        )
+        nodes[0]._raw_table = []
+        if "header" in self.options:
+            table_head, max_header_cols = self.process_header_option()
+            nodes[0]._raw_table += [[col[3][0] for col in table_head[0]]]
+        nodes[0]._raw_table += [[col[3][0] for col in line] for line in table[0]]
+
+        return nodes
+
+
+docutils.parsers.rst.directives.register_directive("csv-table", PatchedCSVTable)
+# XXX
+
+
 def _to_roman(number):
     """Converts the given integer to Roman number.
 
@@ -967,9 +995,10 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
         table_lines = self.document._original_rst.split("\n")[line_min - 1 : line_max]
 
-        if not table_lines:
-            # CSV table without row information – the raw content is used without indentation
-            preformatted_text_node.append_text(preformatted_text_node.rawtext)
+        if hasattr(rst_node, "_raw_table"):
+            preformatted_text_node.append_text(
+                "\n".join(["\t".join(line) for line in rst_node._raw_table])
+            )
         else:
             indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
             preformatted_text_node.append_text(
