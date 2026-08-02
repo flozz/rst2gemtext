@@ -1,0 +1,15 @@
+.. list-table::
+   :header-rows: 1
+
+   * - Col 1
+     - Col 2
+     - Col 3
+   * - A
+     - B
+     - C
+   * - 1
+     - 2
+     - 3
+   * - test *italic*
+     - test **bold**
+     - test ``code``
