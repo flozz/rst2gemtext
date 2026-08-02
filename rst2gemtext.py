@@ -172,6 +172,58 @@ def get_node_end_line(rst_node):
     return node_end_line
 
 
+def draw_table(table_data):
+    """Draw an ASCII art table from a two-dimensional lists.
+
+    :param list table_data: The table data.
+    :rtype: str
+
+    Input::
+
+        [
+            ["A1", "B1", "C1"],
+            ["A2", "B2", "C2"],
+        ]
+
+    Output::
+
+        +----+----+----+
+        | A1 | B1 | C1 |
+        +----+----+----+
+        | A2 | B2 | C2 |
+        +----+----+----+
+
+    TODO:
+
+    * Handle tables with lines of different amount of column
+    * Handle wrapping long text to avoid too large table
+    """
+    columns = len(table_data[0])
+    columns_width = [0] * columns
+
+    # Compute width of each columns
+    for line in table_data:
+        for i in range(len(line)):
+            columns_width[i] = max(columns_width[i], len(line[i]))
+
+    # Separator
+    separator = "+"
+    for column_width in columns_width:
+        separator += "-" * (column_width + 2)
+        separator += "+"
+
+    # Draw table
+    table_lines = [separator]
+    for line in table_data:
+        formatted_columns = []
+        for i in range(len(line)):
+            formatted_columns.append(("%%-%is" % columns_width[i]) % line[i])
+        table_lines.append("| %s |" % " | ".join(formatted_columns))
+        table_lines.append(separator)
+
+    return "\n".join(table_lines)
+
+
 def parse_rst(rst_text, source_path="document"):
     """Parses a reStructuredText document.
 
@@ -996,9 +1048,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         table_lines = self.document._original_rst.split("\n")[line_min - 1 : line_max]
 
         if hasattr(rst_node, "_raw_table"):
-            preformatted_text_node.append_text(
-                "\n".join(["\t".join(line) for line in rst_node._raw_table])
-            )
+            preformatted_text_node.append_text(draw_table(rst_node._raw_table))
         else:
             indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
             preformatted_text_node.append_text(
