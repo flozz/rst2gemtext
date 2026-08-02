@@ -27,6 +27,62 @@ if "gemini" not in docutils.utils.urischemes.schemes:
 # XXX
 
 
+# XXX Hack: override the csv-table and list-table directives
+import docutils.parsers.rst.directives
+import docutils.parsers.rst.directives.tables
+
+
+class PatchedCSVTable(docutils.parsers.rst.directives.tables.CSVTable):
+
+    def run(self):
+        nodes = docutils.parsers.rst.directives.tables.CSVTable.run(self)
+
+        if len(nodes) != 1:
+            raise Exception("Unexpected number of nodes for the csv-table")
+
+        csv_data, source = self.get_csv_data()
+        table = self.parse_csv_data_into_rows(
+            csv_data, self.DocutilsDialect(self.options), source
+        )
+
+        nodes[0]._raw_table = []
+
+        if "header" in self.options:
+            table_head, max_header_cols = self.process_header_option()
+            nodes[0]._raw_table += [[col[3][0] for col in table_head[0]]]
+
+        nodes[0]._raw_table += [[col[3][0] for col in line] for line in table[0]]
+
+        return nodes
+
+
+class PatchedListTable(docutils.parsers.rst.directives.tables.ListTable):
+
+    def run(self):
+        nodes = docutils.parsers.rst.directives.tables.ListTable.run(self)
+
+        if len(nodes) != 1:
+            raise Exception("Unexpected number of nodes for the csv-table")
+
+        root_node = docutils.nodes.Element()
+        self.state.nested_parse(self.content, self.content_offset, root_node)
+        table_data = [
+            [item.children for item in row_list[0]] for row_list in root_node[0]
+        ]
+
+        nodes[0]._raw_table = [
+            ["".join([node.astext() for node in col]) for col in line]
+            for line in table_data
+        ]
+
+        return nodes
+
+
+docutils.parsers.rst.directives.register_directive("csv-table", PatchedCSVTable)
+docutils.parsers.rst.directives.register_directive("list-table", PatchedListTable)
+# XXX
+
+
 def _to_roman(number):
     """Converts the given integer to Roman number.
 
@@ -142,6 +198,58 @@ def get_node_end_line(rst_node):
     node_height = len(convert_to_unix_end_of_line(rst_node.astext()).split("\n"))
     node_end_line = node_start_line + node_height - 1
     return node_end_line
+
+
+def draw_table(table_data):
+    """Draw an ASCII art table from a two-dimensional lists.
+
+    :param list table_data: The table data.
+    :rtype: str
+
+    Input::
+
+        [
+            ["A1", "B1", "C1"],
+            ["A2", "B2", "C2"],
+        ]
+
+    Output::
+
+        +----+----+----+
+        | A1 | B1 | C1 |
+        +----+----+----+
+        | A2 | B2 | C2 |
+        +----+----+----+
+
+    TODO:
+
+    * Handle tables with lines of different amount of column
+    * Handle wrapping long text to avoid too large table
+    """
+    columns = len(table_data[0])
+    columns_width = [0] * columns
+
+    # Compute width of each columns
+    for line in table_data:
+        for i in range(len(line)):
+            columns_width[i] = max(columns_width[i], len(line[i]))
+
+    # Separator
+    separator = "+"
+    for column_width in columns_width:
+        separator += "-" * (column_width + 2)
+        separator += "+"
+
+    # Draw table
+    table_lines = [separator]
+    for line in table_data:
+        formatted_columns = []
+        for i in range(len(line)):
+            formatted_columns.append(("%%-%is" % columns_width[i]) % line[i])
+        table_lines.append("| %s |" % " | ".join(formatted_columns))
+        table_lines.append(separator)
+
+    return "\n".join(table_lines)
 
 
 def parse_rst(rst_text, source_path="document"):
@@ -966,11 +1074,14 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
         line_max += 1
 
         table_lines = self.document._original_rst.split("\n")[line_min - 1 : line_max]
-        indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
 
-        preformatted_text_node.append_text(
-            "\n".join([line[indent:] for line in table_lines])
-        )
+        if hasattr(rst_node, "_raw_table"):
+            preformatted_text_node.append_text(draw_table(rst_node._raw_table))
+        else:
+            indent = len(re.match(r"^(\s*).*$", table_lines[0]).group(1))
+            preformatted_text_node.append_text(
+                "\n".join([line[indent:] for line in table_lines])
+            )
 
         if title:
             preformatted_text_node.alt = title
