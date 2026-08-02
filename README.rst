@@ -156,8 +156,12 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * feat(table): Handled docutils csv-table directive and draw ASCII-art table from it
-  * feat(table): Handled docutils list-table directive and draw ASCII-art table from it
+  * Nothing yet ;)
+
+* **v0.7.0:**
+
+  * feat(table): Handled docutils csv-table directive and draw ASCII-art table from it (@Dryusdan, @flozz, #22)
+  * feat(table): Handled docutils list-table directive and draw ASCII-art table from it (@Dryusdan, @flozz, #22)
 
 * **v0.6.0:**
 

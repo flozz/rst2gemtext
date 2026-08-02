@@ -96,3 +96,8 @@ reStructuredText nodes to support:
 * [x] transition
 * [ ] version
 * [x] warning
+
+docutils directives to support:
+
+* [x] csv-table
+* [x] list-table
