@@ -58,3 +58,44 @@ class Test_EnumaratedListNode:
     def test_to_loweralpha(self, number, result):
         node = rst2gemtext.EnumaratedListNode(None)
         assert node._to_loweralpha(number) == result
+
+
+class Test_draw_table:
+    def test_regular_table(self):
+        assert rst2gemtext.draw_table([["A1", "B1"], ["A2", "B2"]]) == (
+            "+----+----+\n"
+            "| A1 | B1 |\n"
+            "+----+----+\n"
+            "| A2 | B2 |\n"
+            "+----+----+"
+        )
+
+    def test_row_wider_than_first_row(self):
+        # Regression: a data row with more cells than the first row (reachable
+        # via a csv-table whose row is wider than its header) must be padded,
+        # not raise IndexError.
+        assert rst2gemtext.draw_table([["A"], ["B", "C", "D"]]) == (
+            "+---+---+---+\n"
+            "| A |   |   |\n"
+            "+---+---+---+\n"
+            "| B | C | D |\n"
+            "+---+---+---+"
+        )
+
+    def test_row_narrower_than_widest(self):
+        assert rst2gemtext.draw_table([["A", "B", "C"], ["D"]]) == (
+            "+---+---+---+\n"
+            "| A | B | C |\n"
+            "+---+---+---+\n"
+            "| D |   |   |\n"
+            "+---+---+---+"
+        )
+
+
+class Test_convert_csv_table:
+    def test_data_row_wider_than_header_does_not_crash(self):
+        # A csv-table data row may hold more cells than the header row; the
+        # whole conversion used to abort with IndexError from draw_table.
+        rst = '.. csv-table:: T\n   :header: "A", "B"\n\n   1, 2, 3\n'
+        output = rst2gemtext.convert(rst)
+        assert "1" in output and "2" in output and "3" in output
