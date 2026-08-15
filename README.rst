@@ -156,6 +156,7 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
+  * feat(definition_list): Handled ``definition_list``, ``definition_list_item``, ``term`` and ``definition`` nodes (@eeshsaxena)
   * feat(table): Added support for csv-tables with irregular column counts across rows (@eeshsaxena, #23)
 
 * **v0.7.0:**

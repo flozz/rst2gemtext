@@ -417,6 +417,21 @@ class EnumaratedListNode(BulletListNode):
         return "\n".join(items)
 
 
+class DefinitionListNode(NodeGroup):
+    def to_gemtext(self):
+        return "\n\n".join([node.to_gemtext() for node in self.nodes])
+
+
+class DefinitionListItemNode(NodeGroup):
+    def to_gemtext(self):
+        return "\n".join([node.to_gemtext() for node in self.nodes])
+
+
+class TermNode(Node):
+    def to_gemtext(self):
+        return remove_newlines(self.rawtext)
+
+
 class SystemMessageNode(NodeGroup):
     def __init__(self, rst_node, level=1, source="document", line=0, type_="info"):
         NodeGroup.__init__(self, rst_node)
@@ -535,6 +550,7 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
     #: Nodes to ignore as there is no equivalent markup in Gemtext.
     #: NOTE: the text inside the notes will be added to the parent node.
     _NOP_NODES = [
+        "definition",  # transparent: its body nodes render themselves
         "emphasis",
         "literal",
         "strong",
@@ -727,6 +743,36 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
 
     def depart_danger(self, rst_node):
         self.depart_admonition(rst_node)
+
+    # definition_list
+
+    def visit_definition_list(self, rst_node):
+        definition_list_node = DefinitionListNode(rst_node)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(definition_list_node)
+
+    def depart_definition_list(self, rst_node):
+        nodes = self._split_nodes(rst_node)
+        definition_list_node = nodes.pop(0)
+        for node in nodes:
+            definition_list_node.nodes.append(node)
+        if definition_list_node.nodes:
+            self.nodes.append(definition_list_node)
+
+    # definition_list_item
+
+    def visit_definition_list_item(self, rst_node):
+        definition_list_item_node = DefinitionListItemNode(rst_node)
+        self._current_node = None  # To catch eventual errors
+        self.nodes.append(definition_list_item_node)
+
+    def depart_definition_list_item(self, rst_node):
+        nodes = self._split_nodes(rst_node)
+        definition_list_item_node = nodes.pop(0)
+        for node in nodes:
+            definition_list_item_node.nodes.append(node)
+        if definition_list_item_node.nodes:
+            self.nodes.append(definition_list_item_node)
 
     # enumerated_list
 
@@ -1090,6 +1136,16 @@ class GemtextTranslator(docutils.nodes.GenericNodeVisitor):
             preformatted_text_node.alt = title
 
         self.nodes.append(preformatted_text_node)
+
+    # term
+
+    def visit_term(self, rst_node):
+        term_node = TermNode(rst_node)
+        self._current_node = term_node
+        self.nodes.append(term_node)
+
+    def depart_term(self, rst_node):
+        self._current_node = None  # To catch eventual errors
 
     # Text (leaf)
 

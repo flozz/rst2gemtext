@@ -25,9 +25,9 @@ reStructuredText nodes to support:
 * [x] danger
 * [ ] date
 * [ ] decoration
-* [ ] definition
-* [ ] definition_list
-* [ ] definition_list_item
+* [x] definition
+* [x] definition_list
+* [x] definition_list_item
 * [ ] description
 * [ ] docinfo
 * [ ] doctest_block
@@ -85,7 +85,7 @@ reStructuredText nodes to support:
 * [x] table
 * [x] target
 * [x] tbody
-* [ ] term
+* [x] term
 * [x] Text
 * [x] tgroup
 * [x] thead
