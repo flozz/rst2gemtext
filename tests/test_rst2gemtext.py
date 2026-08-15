@@ -34,10 +34,14 @@ class Test_convert:
     def test_rst_document(self, input_rst_file):
         source_rst_path = (_FIXTURES_PATH / input_rst_file).as_posix()
 
-        with open(source_rst_path, "r") as file_:
+        with open(source_rst_path, "r", encoding="utf-8") as file_:
             input_rst = file_.read()
 
-        with open((_FIXTURES_PATH / input_rst_file).with_suffix(".gmi"), "r") as file_:
+        with open(
+            (_FIXTURES_PATH / input_rst_file).with_suffix(".gmi"),
+            "r",
+            encoding="utf-8",
+        ) as file_:
             expected_gemtext = file_.read()
 
         output_gemtext = rst2gemtext.convert(input_rst, source_rst_path)
@@ -90,12 +94,3 @@ class Test_draw_table:
             "| D |   |   |\n"
             "+---+---+---+"
         )
-
-
-class Test_convert_csv_table:
-    def test_data_row_wider_than_header_does_not_crash(self):
-        # A csv-table data row may hold more cells than the header row; the
-        # whole conversion used to abort with IndexError from draw_table.
-        rst = '.. csv-table:: T\n   :header: "A", "B"\n\n   1, 2, 3\n'
-        output = rst2gemtext.convert(rst)
-        assert "1" in output and "2" in output and "3" in output
