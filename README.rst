@@ -156,7 +156,7 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * Nothing yet ;)
+  * feat(table): Added support for csv-tables with irregular column counts across rows (@eeshsaxena, #23)
 
 * **v0.7.0:**
 
