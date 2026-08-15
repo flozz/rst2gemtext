@@ -223,10 +223,12 @@ def draw_table(table_data):
 
     TODO:
 
-    * Handle tables with lines of different amount of column
     * Handle wrapping long text to avoid too large table
     """
-    columns = len(table_data[0])
+    # Size the table on the widest row, not just the first one: a csv-table
+    # accepts rows with more cells than its header, and indexing columns_width
+    # off len(table_data[0]) raised IndexError on such input.
+    columns = max((len(line) for line in table_data), default=0)
     columns_width = [0] * columns
 
     # Compute width of each columns
@@ -244,8 +246,9 @@ def draw_table(table_data):
     table_lines = [separator]
     for line in table_data:
         formatted_columns = []
-        for i in range(len(line)):
-            formatted_columns.append(("%%-%is" % columns_width[i]) % line[i])
+        for i in range(columns):
+            cell = line[i] if i < len(line) else ""
+            formatted_columns.append(("%%-%is" % columns_width[i]) % cell)
         table_lines.append("| %s |" % " | ".join(formatted_columns))
         table_lines.append(separator)
 

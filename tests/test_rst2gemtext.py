@@ -34,10 +34,14 @@ class Test_convert:
     def test_rst_document(self, input_rst_file):
         source_rst_path = (_FIXTURES_PATH / input_rst_file).as_posix()
 
-        with open(source_rst_path, "r") as file_:
+        with open(source_rst_path, "r", encoding="utf-8") as file_:
             input_rst = file_.read()
 
-        with open((_FIXTURES_PATH / input_rst_file).with_suffix(".gmi"), "r") as file_:
+        with open(
+            (_FIXTURES_PATH / input_rst_file).with_suffix(".gmi"),
+            "r",
+            encoding="utf-8",
+        ) as file_:
             expected_gemtext = file_.read()
 
         output_gemtext = rst2gemtext.convert(input_rst, source_rst_path)
@@ -58,3 +62,35 @@ class Test_EnumaratedListNode:
     def test_to_loweralpha(self, number, result):
         node = rst2gemtext.EnumaratedListNode(None)
         assert node._to_loweralpha(number) == result
+
+
+class Test_draw_table:
+    def test_regular_table(self):
+        assert rst2gemtext.draw_table([["A1", "B1"], ["A2", "B2"]]) == (
+            "+----+----+\n"
+            "| A1 | B1 |\n"
+            "+----+----+\n"
+            "| A2 | B2 |\n"
+            "+----+----+"
+        )
+
+    def test_row_wider_than_first_row(self):
+        # Regression: a data row with more cells than the first row (reachable
+        # via a csv-table whose row is wider than its header) must be padded,
+        # not raise IndexError.
+        assert rst2gemtext.draw_table([["A"], ["B", "C", "D"]]) == (
+            "+---+---+---+\n"
+            "| A |   |   |\n"
+            "+---+---+---+\n"
+            "| B | C | D |\n"
+            "+---+---+---+"
+        )
+
+    def test_row_narrower_than_widest(self):
+        assert rst2gemtext.draw_table([["A", "B", "C"], ["D"]]) == (
+            "+---+---+---+\n"
+            "| A | B | C |\n"
+            "+---+---+---+\n"
+            "| D |   |   |\n"
+            "+---+---+---+"
+        )

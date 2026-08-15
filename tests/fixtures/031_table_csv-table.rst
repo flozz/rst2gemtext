@@ -7,3 +7,11 @@
    "Knot", "0.192", "0.2", "0.1", "0.7"
    "Pihole", "0.182", "0.1", "0.1", "0.9"
    "Unbound", "0.371", "0.1", "0.1", "7.8"
+
+A data row may hold more cells than the header row:
+
+.. csv-table::
+   :header: "A", "B"
+
+   "1", "2", "3"
+   "4", "5"
