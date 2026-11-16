@@ -16,7 +16,7 @@ keywords = [
 ]
 license = "GPL-3.0-or-later"
 license-files = ["COPYING"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "docutils",
     "pygments",
@@ -45,7 +45,7 @@ chat = "https://discord.gg/P77sWhuSs4"
 donate = "https://github.com/flozz/rst2gemtext#support-this-project"
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.flake8]
 ignore = [

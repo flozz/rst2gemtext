@@ -11,7 +11,7 @@ rst2gemtext aims to convert **reStructuredText** markup to **Gemtext**, the mark
 Requirements
 ------------
 
-* Python >= 3.10
+* Python >= 3.11
 * docutils
 * pygments
 
@@ -130,11 +130,11 @@ and run the tests::
 
 You can use following commands to run the tests only on a certain Python version (the corresponding Python interpreter must be installed on your machine)::
 
-    nox --session test-3.10
     nox --session test-3.11
     nox --session test-3.12
     nox --session test-3.13
     nox --session test-3.14
+    nox --session test-3.15
 
 You can also fix coding style errors automatically with::
 
@@ -156,7 +156,8 @@ Changelog
 
 * **[NEXT]** (changes on ``master``, but not released yet):
 
-  * Nothing yet ;)
+  * misc: Added Python 3.15 support (@flozz)
+  * misc!: Removed Python 3.10 support (@flozz)
 
 * **v0.7.1:**
 
